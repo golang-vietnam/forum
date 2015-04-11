@@ -1,0 +1,20 @@
+{
+  "name": "golang.vn",
+  "version": "0.0.0",
+  "homepage": "http://golang.vn/",
+  "authors": [
+    "Nguyễn Thế Nguyên <ntnguyen.js@gmail.com>"
+  ],
+  "description": "golang programing language forum in VietNam",
+  "main": "main.go",
+  "keywords": [
+    "golang"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "public/vendor",
+    "test",
+    "tests"
+  ]
+}
