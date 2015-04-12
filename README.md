@@ -18,21 +18,10 @@
 - Front-end framework: [Materializecss](http://materializecss.com)
 
 ### Install dependencies
-#### If you don't need use 'godep' to manage dependencies version (always lastest) that mean will break your project
-    go get ./..
- 
-#### Use 'godep' recommend
     
-    go get github.com/kr/godep
-    export PATH=$PATH:$GOPATH/bin
+    make install
 
-Cd to forum package
-    
-    cd $GOPATH/src/github.com/golang-vietnam/forum
-    godep restore
+### Run project
 
-Install new dependencies then save
+    make
 
-    godep save
-
-More about [godep](https://github.com/tools/godep) 
