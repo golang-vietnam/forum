@@ -1,0 +1,21 @@
+{
+    "development":{
+        "database":{
+            "name":"golangvietnam_develop",
+            "host":"127.0.0.1",
+            "port":3306
+        }
+    },"production":{
+        "database":{
+            "name":"golangvietnam_production",
+            "host":"127.0.0.1",
+            "port":3306
+        }
+    },"testing":{
+        "database":{
+            "name":"golangvietnam_test",
+            "host":"127.0.0.1",
+            "port":3306
+        }
+    }
+}

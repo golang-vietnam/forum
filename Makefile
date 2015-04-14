@@ -1,11 +1,21 @@
 default: run
 
 run:
-	go run main.go
+	@go run forum.go start
+
+test:
+	@go run forum.go test
 
 install:
-	go get github.com/kr/godep
-	export PATH=$(PATH):$(GOPATH)/bin;godep restore
-	@echo "Install dependencies successful"
+	@echo "Installing ..."
+	@go get github.com/kr/godep
+	@export PATH=$(PATH):$(GOPATH)/bin;godep restore
+	@echo "Install dependencies successful !"
+
+save:
+	@echo "Saving ..."
+	@go get github.com/kr/godep
+	@export PATH=$(PATH):$(GOPATH)/bin;godep save
+	@echo "Save new dependencies successful !"
 
 	
