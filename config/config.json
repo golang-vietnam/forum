@@ -3,19 +3,34 @@
         "database":{
             "name":"golangvietnam_develop",
             "host":"127.0.0.1",
-            "port":3306
+            "port":"3306",
+            "user":"",
+            "password":""
+        },"server":{
+            "host":"127.0.0.1",
+            "port":"8080"
         }
     },"production":{
         "database":{
             "name":"golangvietnam_production",
             "host":"127.0.0.1",
-            "port":3306
+            "port":"3306",
+            "user":"",
+            "password":""
+        },"server":{
+            "host":"127.0.0.1",
+            "port":"8080"
         }
     },"testing":{
         "database":{
             "name":"golangvietnam_test",
             "host":"127.0.0.1",
-            "port":3306
+            "port":"3306",
+            "user":"",
+            "password":""
+        },"server":{
+            "host":"127.0.0.1",
+            "port":"8080"
         }
     }
 }
