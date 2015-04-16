@@ -20,8 +20,9 @@ func Mongo() gin.HandlerFunc {
 		panic(err)
 	}
 	return func(c *gin.Context) {
-		c.Set("db", mongoSession)
-		defer mongoSession.Close()
+		newMongoSession := mongoSession.Clone()
+		defer newMongoSession.Close()
+		c.Set("db", newMongoSession)
 		c.Next()
 	}
 }

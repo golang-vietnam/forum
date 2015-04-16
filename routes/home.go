@@ -6,20 +6,15 @@ import (
 	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/middleware"
 	"github.com/golang-vietnam/forum/models"
-	"gopkg.in/mgo.v2"
 )
 
 type Home struct{}
-
-var (
-	mongoSession *mgo.Session
-)
 
 func (h *Home) Index(c *gin.Context) {
 	ctx := pongo2.Context{
 		"hello": "Hello text from route and use in child layout",
 	}
-	mongoSession = middleware.MongoSession(c)
+	mongoSession := middleware.MongoSession(c)
 	db := mongoSession.DB(config.GetDB("name"))
 	user := db.C("user")
 	user.Insert(&models.User{Name: "Balabala"})
