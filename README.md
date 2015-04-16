@@ -12,7 +12,7 @@
 
 ### Core dependencies
 - Web framework: [Gin](https://github.com/gin-gonic/gin)
-- ORM: [GORM](https://github.com/jinzhu/gorm)
+- NoSql-MongoDb: [mgo](http://labix.org/mgo)
 - Template engine: [Pongo2](https://github.com/flosch/pongo2)
 - Testing: [GoConvey](http://goconvey.co/)
 - Front-end framework: [Materializecss](http://materializecss.com)

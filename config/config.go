@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"log"
 )
 
 func mapDb(confEnv map[string]interface{}) map[string]interface{} {
@@ -26,7 +27,7 @@ func GetDB(key string) string {
 		value, _ := mapDb(confEnv)[key].(string)
 		return value
 	default:
-		fmt.Println("Ohshit! Not config environment")
+		log.Panic("Ohshit! Not config environment")
 	}
 	return ""
 }
