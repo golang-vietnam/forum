@@ -33,17 +33,16 @@ func main() {
 	switch arg {
 	case "start":
 		viper.Set("env", "development")
-		cmd.Server()
 	case "deploy":
 		viper.Set("env", "production")
-		cmd.Server()
 	case "test":
 		viper.Set("env", "testing")
 		fmt.Println("Test will implements here")
+		os.Exit(1)
 	default:
 		fmt.Println("Invalid command:", arg)
 		showUsage()
 		os.Exit(1)
 	}
-
+	cmd.Server()
 }

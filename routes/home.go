@@ -12,9 +12,6 @@ import (
 type Home struct{}
 
 func (h *Home) Index(c *gin.Context) {
-	ctx := pongo2.Context{
-		"hello": "Hello text from route and use in child layout",
-	}
 	mongoSession := middleware.MongoSession(c)
 	db := mongoSession.DB(config.GetDB("name"))
 	user := db.C("user")
@@ -24,9 +21,13 @@ func (h *Home) Index(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	for i := 0; i < len(users); i++ {
-		fmt.Println(users[i].Id)
-	}
+	c.JSON(200, users)
+}
 
-	c.HTML(200, "views/sites/home/index.html", ctx)
+//Use for admin
+func (h *Home) AdminDashboard(c *gin.Context) {
+	ctx := pongo2.Context{
+		"hello": "Hello Admin",
+	}
+	c.HTML(200, "views/admins/dashboard/index.html", ctx)
 }

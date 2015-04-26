@@ -27,5 +27,13 @@ func Server() {
 	{
 		userGroup.GET("/", userRouter.Index)
 	}
+	adminGroup := app.Group("/admin")
+	{
+		adminGroup.GET("/", homeRouter.AdminDashboard)
+		userAdmin := adminGroup.Group("/user")
+		{
+			userAdmin.GET("/", userRouter.AdminAllUser)
+		}
+	}
 	app.Run(config.GetServer("host") + ":" + config.GetServer("port"))
 }
