@@ -26,7 +26,3 @@ func Mongo() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
-func MongoSession(c *gin.Context) *mgo.Session {
-	return c.MustGet("db").(*mgo.Session)
-}

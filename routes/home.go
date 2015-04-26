@@ -1,27 +1,22 @@
 package routes
 
 import (
-	"fmt"
 	"github.com/flosch/pongo2"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-vietnam/forum/config"
-	"github.com/golang-vietnam/forum/middleware"
+	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/models"
 )
 
 type Home struct{}
 
 func (h *Home) Index(c *gin.Context) {
-	mongoSession := middleware.MongoSession(c)
-	db := mongoSession.DB(config.GetDB("name"))
-	user := db.C("user")
-	user.Insert(&models.User{Name: "Balabala"})
-	var users []models.User
-	err := db.C("user").Find(nil).All(&users)
+	var users2 []models.User
+	user := database.Collection(c, "user")
+	err := user.Find(nil).All(&users2)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
-	c.JSON(200, users)
+	c.JSON(200, users2)
 }
 
 //Use for admin
