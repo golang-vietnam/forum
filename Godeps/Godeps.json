@@ -37,15 +37,6 @@
 			"Rev": "e2fa89777e344782ef5d31929f095f4589c35dcc"
 		},
 		{
-			"ImportPath": "github.com/go-sql-driver/mysql",
-			"Comment": "v1.2-88-ga197e5d",
-			"Rev": "a197e5d40516f2e9f74dcee085a5f2d4604e94df"
-		},
-		{
-			"ImportPath": "github.com/jinzhu/gorm",
-			"Rev": "1eb1ed091f2b725699a930e03a05890c861d2c50"
-		},
-		{
 			"ImportPath": "github.com/julienschmidt/httprouter",
 			"Rev": "999ba04938b528fb4fb859231ee929958b8db4a6"
 		},
@@ -57,11 +48,6 @@
 		{
 			"ImportPath": "github.com/kr/text",
 			"Rev": "6807e777504f54ad073ecef66747de158294b639"
-		},
-		{
-			"ImportPath": "github.com/lib/pq/hstore",
-			"Comment": "go1.0-cutoff-31-ga33d605",
-			"Rev": "a33d6053e025943d5dc89dfa1f35fe5500618df7"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
