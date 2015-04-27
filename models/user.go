@@ -19,3 +19,12 @@ type User struct {
 	CreateAt     time.Time     `bson:"create_at"`
 	UpdateAt     time.Time     `bson:"update_at"`
 }
+
+func (u *User) All() []User {
+	var users []User
+	collection("user").Find(nil).All(&users)
+	return users
+}
+func (u *User) Save() {
+	collection("user").Insert(u)
+}

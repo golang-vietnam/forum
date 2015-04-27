@@ -3,20 +3,15 @@ package routes
 import (
 	"github.com/flosch/pongo2"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/models"
 )
 
 type Home struct{}
 
 func (h *Home) Index(c *gin.Context) {
-	var users2 []models.User
-	user := database.Collection(c, "user")
-	err := user.Find(nil).All(&users2)
-	if err != nil {
-		panic(err)
-	}
-	c.JSON(200, users2)
+	u := &models.User{Name: "Nguyen The Nguyen"}
+	u.Save()
+	c.JSON(200, u.All())
 }
 
 //Use for admin
