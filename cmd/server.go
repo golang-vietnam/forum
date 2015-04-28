@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers"
-	"github.com/golang-vietnam/forum/models"
+	"github.com/golang-vietnam/forum/resources"
 	"github.com/golang-vietnam/forum/routes"
 	"runtime"
 )
@@ -12,7 +12,7 @@ import (
 func Server() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	err := models.InitDb()
+	err := resources.InitDb()
 	if err != nil {
 		panic(err)
 	}

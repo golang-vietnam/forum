@@ -1,7 +1,6 @@
-package models
+package resources
 
 import (
-	// "fmt"
 	"github.com/golang-vietnam/forum/config"
 	"gopkg.in/mgo.v2"
 	"time"
@@ -9,6 +8,7 @@ import (
 
 var (
 	mongoSession *mgo.Session
+	dataBase     string
 )
 
 func InitDb() error {
@@ -21,10 +21,10 @@ func InitDb() error {
 	}
 	var err error
 	mongoSession, err = mgo.DialWithInfo(mongoDBDialInfo)
-	_ = mongoSession
+	dataBase = config.GetDB("name")
 	return err
 }
 
 func collection(c string) *mgo.Collection {
-	return mongoSession.DB(config.GetDB("name")).C(c)
+	return mongoSession.DB(dataBase).C(c)
 }
