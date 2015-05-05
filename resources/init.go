@@ -22,6 +22,18 @@ func InitDb() error {
 	var err error
 	mongoSession, err = mgo.DialWithInfo(mongoDBDialInfo)
 	dataBase = config.GetDB("name")
+	indexError := index()
+	if err != nil {
+		return err
+	}
+	return indexError
+}
+
+func index() error {
+	err := collection("user").EnsureIndex(mgo.Index{
+		Key:    []string{"email"},
+		Unique: true,
+	})
 	return err
 }
 

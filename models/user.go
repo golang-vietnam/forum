@@ -18,7 +18,3 @@ type User struct {
 	CreateAt     time.Time     `bson:"create_at"`
 	UpdateAt     time.Time     `bson:"update_at"`
 }
-
-// func (u *User) Save() {
-// 	collection("user").Insert(u)
-// }

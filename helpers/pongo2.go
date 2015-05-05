@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"github.com/flosch/pongo2"
-	_ "github.com/gin-gonic/gin/render"
 	"net/http"
 )
 

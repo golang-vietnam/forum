@@ -10,14 +10,14 @@ import (
 type Home struct{}
 
 var (
-	userResource = resources.User{}
+	userResource = resources.ResourceUser{}
 )
 
 func (h *Home) Index(c *gin.Context) {
 	u := models.User{Name: "Nguyen The Nguyen"}
-	userResource.Create(u)
-	users, _ := userResource.List()
-	c.JSON(200, users)
+	u.Email = "ntnguyen@ubisen.com"
+	userResource.Create(&u)
+	c.JSON(200, u)
 }
 
 //Use for admin
