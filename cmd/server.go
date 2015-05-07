@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers"
+	"github.com/golang-vietnam/forum/middleware"
 	"github.com/golang-vietnam/forum/resources"
 	"github.com/golang-vietnam/forum/routes"
 	"runtime"
@@ -16,7 +17,10 @@ func Server() {
 	if err != nil {
 		panic(err)
 	}
-	app := gin.Default()
+	app := gin.New()
+	app.Use(gin.Logger())
+	app.Use(middleware.Recovery())
+	app.Use(middleware.ErrorHandler())
 	app.Static("/public", "./public")
 	app.HTMLRender = helpers.NewPongoRender()
 	app.NotFound404(routes.Error404)
