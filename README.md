@@ -1,6 +1,6 @@
 ## Golang.vn golang programing language forum in VietNam 
 
- ![alt golang](https://raw.githubusercontent.com/golang-vietnam/forum/master/public/img/logo.jpg "golang programing language")
+ ![alt golang](https://raw.githubusercontent.com/golang-vietnam/forum/master/public/img/isomorphic_code_share.png "golang programing language")
 
 ### Project structure
 
