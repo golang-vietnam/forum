@@ -37,8 +37,6 @@ func main() {
 		viper.Set("env", "production")
 	case "test":
 		viper.Set("env", "testing")
-		fmt.Println("Test will implements here")
-		os.Exit(1)
 	default:
 		fmt.Println("Invalid command:", arg)
 		showUsage()

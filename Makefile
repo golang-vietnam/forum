@@ -3,7 +3,15 @@ default: run
 run:
 	@go run forum.go start
 
+testOnWeb:
+	@cd $(GOPATH)/src/github.com/golang-vietnam/forum/tests;$(GOPATH)/bin/goconvey
+
 test:
+	@echo "Begin test on console!"
+	@cd $(GOPATH)/src/github.com/golang-vietnam/forum/tests;go test -v
+	@echo "End test!"
+
+runOnTest:
 	@go run forum.go test
 
 install:

@@ -25,3 +25,7 @@
 
     make
 
+### Test server
+- Run server on test mode: `make runOnTest`
+- In other terminal: `make test` or `make testOnWeb` then see test on `localhost:8080`
+
