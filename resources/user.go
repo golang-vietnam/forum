@@ -1,42 +1,53 @@
 package resources
 
 import (
-	"github.com/golang-vietnam/forum/models"
+	h "github.com/golang-vietnam/forum/helpers"
+	m "github.com/golang-vietnam/forum/models"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-type ResourceUserInterface interface {
-	List() ([]models.User, error)
-	GetById(id bson.ObjectId) (models.User, error)
-	Create(u *models.User) error
-	RemoveById(id bson.ObjectId) error
-	Validate(u models.User) (bool, error)
-}
+// type Resource interface {
+// 	List() ([]m.User, error)
+// 	GetById(id bson.ObjectId) (m.User, error)
+// 	Create(r *m.User) h.Error
+// 	RemoveById(id bson.ObjectId) error
+// 	Validate(u m.User) (bool, error)
+// }
 
 type ResourceUser struct {
 }
 
-func (r *ResourceUser) List() ([]models.User, error) {
-	var users []models.User
+func (r ResourceUser) List() ([]m.User, error) {
+	var users []m.User
 	err := collection("user").Find(nil).All(&users)
 	return users, err
 }
 
-func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
-	var user models.User
+func (r ResourceUser) GetById(id bson.ObjectId) (m.User, error) {
+	var user m.User
 	err := collection("user").FindId(id).One(&user)
 	return user, err
 }
 
-func (r *ResourceUser) Create(u *models.User) error {
+func (r ResourceUser) Create(u *m.User) h.Error {
 	u.Id = bson.NewObjectId()
-	return collection("user").Insert(u)
+	err := collection("user").Insert(u)
+	if err != nil {
+		if mgo.IsDup(err) {
+			badRequest := h.ErrBadRequest
+			badRequest.Detail = "This account has been exist!"
+			return badRequest
+		}
+		panic(err)
+	}
+	return h.Error{}
 }
 
-func (r *ResourceUser) RemoveById(id bson.ObjectId) error {
+func (r ResourceUser) RemoveById(id bson.ObjectId) error {
 	return collection("user").RemoveId(id)
 }
 
-func (r *ResourceUser) Validate(u models.User) (bool, error) {
+func (r ResourceUser) Validate(u m.User) (bool, error) {
 	return false, nil
 }

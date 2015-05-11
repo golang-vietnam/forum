@@ -3,22 +3,22 @@ package routes
 import (
 	"github.com/flosch/pongo2"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-vietnam/forum/models"
-	"github.com/golang-vietnam/forum/resources"
+	m "github.com/golang-vietnam/forum/models"
+	r "github.com/golang-vietnam/forum/resources"
 )
 
 type Home struct{}
 
 var (
-	userResource = resources.ResourceUser{}
+	ru = r.ResourceUser{}
 )
 
 func (h *Home) Index(c *gin.Context) {
-	u := models.User{Name: "Nguyen The Nguyen"}
+	u := m.User{Name: "Nguyen The Nguyen"}
 	u.Email = "ntnguyen@ubisen.com"
-	err := userResource.Create(&u)
-	if err != nil {
-		panic(err)
+	err := ru.Create(&u)
+	if !err.IsNil() {
+		return
 	}
 	c.JSON(200, u)
 }
