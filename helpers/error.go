@@ -1,15 +1,23 @@
 package helpers
 
+import (
+	_ "fmt"
+	"github.com/gin-gonic/gin"
+)
+
 type Errors struct {
 	Errors []Error `json:"errors"`
 }
 
 func (e *Errors) StatusCode() int {
-	statusCode := 500
 	if len(e.Errors) > 0 {
-		statusCode = e.Errors[0].Status
+		return e.Errors[0].Status
 	}
-	return statusCode
+	return 500
+}
+
+func (e *Errors) HasError() bool {
+	return len(e.Errors) > 0
 }
 
 type Error struct {
@@ -19,10 +27,7 @@ type Error struct {
 }
 
 func (e *Error) IsNil() bool {
-	if e.Status == 0 && e.Detail == "" && e.Title == "" {
-		return true
-	}
-	return false
+	return e.Status == 0 && e.Detail == "" && e.Title == ""
 }
 
 var (
@@ -32,3 +37,15 @@ var (
 	ErrForbidden      = Error{403, "Forbidden", "Access deny"}
 	ErrNotFound       = Error{404, "Not Found", "Not found anything matching the URI given"}
 )
+
+func SetErrors(c *gin.Context) {
+	c.Set("errors", &Errors{})
+}
+
+func AddError(c *gin.Context, e Error) {
+	errors := c.MustGet("errors").(*Errors)
+	errors.Errors = append(errors.Errors, e)
+}
+func GetErrors(c *gin.Context) *Errors {
+	return c.MustGet("errors").(*Errors)
+}

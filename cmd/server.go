@@ -11,7 +11,6 @@ import (
 )
 
 func Server() {
-
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	err := resources.InitDb()
 	if err != nil {

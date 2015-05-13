@@ -22,8 +22,11 @@ func Recovery() gin.HandlerFunc {
 
 func ErrorHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if len(c.Errors) > 0 {
-			c.JSON(-1, "errors")
+		h.SetErrors(c)
+		c.Next()
+		errors := h.GetErrors(c)
+		if errors.HasError() {
+			c.JSON(errors.StatusCode(), errors)
 		}
 	}
 }

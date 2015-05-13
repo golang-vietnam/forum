@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/flosch/pongo2"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-vietnam/forum/helpers"
 	m "github.com/golang-vietnam/forum/models"
 	r "github.com/golang-vietnam/forum/resources"
 )
@@ -18,6 +19,7 @@ func (h *Home) Index(c *gin.Context) {
 	u.Email = "ntnguyen@ubisen.com"
 	err := ru.Create(&u)
 	if !err.IsNil() {
+		helpers.AddError(c, err)
 		return
 	}
 	c.JSON(200, u)
