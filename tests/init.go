@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/golang-vietnam/forum/config"
 	"github.com/spf13/viper"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -37,4 +38,13 @@ func do_request(method string, urlStr string, model interface{}) *http.Response 
 		panic(err)
 	}
 	return res
+}
+
+func parse_response(response *http.Response) []byte {
+	body, err := ioutil.ReadAll(response.Body)
+	defer response.Body.Close()
+	if err != nil {
+		panic(err)
+	}
+	return body
 }

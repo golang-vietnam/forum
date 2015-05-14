@@ -11,7 +11,7 @@ func Recovery() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				log.Printf("panic: %+v", err)
-				errors := h.Errors{Errors: []h.Error{h.ErrInternalServer}}
+				errors := &h.Errors{Errors: []h.Error{h.ErrInternalServer}}
 				c.JSON(errors.StatusCode(), errors)
 			}
 		}()

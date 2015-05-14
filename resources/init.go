@@ -20,13 +20,11 @@ func InitDb() error {
 		Password: config.GetDB("password"),
 	}
 	var err error
-	mongoSession, err = mgo.DialWithInfo(mongoDBDialInfo)
-	dataBase = config.GetDB("name")
-	indexError := index()
-	if err != nil {
+	if mongoSession, err = mgo.DialWithInfo(mongoDBDialInfo); err != nil {
 		return err
 	}
-	return indexError
+	dataBase = config.GetDB("name")
+	return index()
 }
 
 func index() error {
@@ -39,4 +37,10 @@ func index() error {
 
 func collection(c string) *mgo.Collection {
 	return mongoSession.DB(dataBase).C(c)
+}
+
+func CloseDb() {
+	if mongoSession != nil {
+		mongoSession.Close()
+	}
 }

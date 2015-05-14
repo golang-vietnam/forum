@@ -34,6 +34,7 @@ func Server() {
 	userGroup := app.Group("/user")
 	{
 		userGroup.GET("/", userRouter.Index)
+		userGroup.POST("/", userRouter.Create)
 	}
 	adminGroup := app.Group("/admin")
 	{

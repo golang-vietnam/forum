@@ -7,14 +7,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// type Resource interface {
-// 	List() ([]m.User, error)
-// 	GetById(id bson.ObjectId) (m.User, error)
-// 	Create(r *m.User) h.Error
-// 	RemoveById(id bson.ObjectId) error
-// 	Validate(u m.User) (bool, error)
-// }
-
 type ResourceUser struct {
 }
 
@@ -36,7 +28,7 @@ func (r ResourceUser) Create(u *m.User) h.Error {
 	if err != nil {
 		if mgo.IsDup(err) {
 			badRequest := h.ErrBadRequest
-			badRequest.Detail = "This account has been exist!"
+			badRequest.Detail = "This user has been exist!"
 			return badRequest
 		}
 		panic(err)
@@ -50,4 +42,9 @@ func (r ResourceUser) RemoveById(id bson.ObjectId) error {
 
 func (r ResourceUser) Validate(u m.User) (bool, error) {
 	return false, nil
+}
+func ClearAllUser() {
+	if _, err := collection("user").RemoveAll(nil); err != nil {
+		panic(err)
+	}
 }
