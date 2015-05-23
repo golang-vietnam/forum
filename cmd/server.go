@@ -21,8 +21,8 @@ func Server() {
 	app.Use(middleware.Recovery())
 	app.Use(middleware.ErrorHandler())
 	app.Static("/public", "./public")
-	app.HTMLRender = helpers.NewPongoRender()
-	app.NotFound404(routes.Error404)
+	app.LoadHTMLGlob("templates/*")
+	app.HTMLRender = helpers.NewNgPongRender()
 
 	homeRouter := routes.Home{}
 	homeGroup := app.Group("/")

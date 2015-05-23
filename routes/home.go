@@ -13,6 +13,7 @@ func (h *Home) Index(c *gin.Context) {
 
 //Use for admin
 func (h *Home) AdminDashboard(c *gin.Context) {
+
 	ctx := pongo2.Context{
 		"hello": "Hello Admin",
 	}

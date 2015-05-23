@@ -2,39 +2,48 @@ package helpers
 
 import (
 	"github.com/flosch/pongo2"
+	"github.com/gin-gonic/gin/render"
 	"net/http"
 )
 
-type pongoRender struct {
-	cache map[string]*pongo2.Template
+// Nguyen The Nguyen implements for Gin 1.0
+type NgHTML struct {
+	Template map[string]*pongo2.Template
+	Name     string
+	Data     interface{}
 }
 
-func writeHeader(w http.ResponseWriter, code int, contentType string) {
-	if code >= 0 {
-		w.Header().Set("Content-Type", contentType)
-		w.WriteHeader(code)
-	}
-}
+func (n NgHTML) Write(w http.ResponseWriter) error {
+	file := n.Name
+	ctx := n.Data.(pongo2.Context)
 
-func NewPongoRender() *pongoRender {
-	return &pongoRender{map[string]*pongo2.Template{}}
-}
-
-func (p *pongoRender) Render(w http.ResponseWriter, code int, data ...interface{}) error {
-	file := data[0].(string)
-	ctx := data[1].(pongo2.Context)
 	var t *pongo2.Template
 
-	if tmpl, ok := p.cache[file]; ok {
+	if tmpl, ok := n.Template[file]; ok {
 		t = tmpl
 	} else {
 		tmpl, err := pongo2.FromFile(file)
 		if err != nil {
 			return err
 		}
-		p.cache[file] = tmpl
+		n.Template[file] = tmpl
 		t = tmpl
 	}
-	writeHeader(w, code, "text/html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	return t.ExecuteWriter(ctx, w)
+}
+
+type NgPongRender struct {
+	Template map[string]*pongo2.Template
+}
+
+func (n *NgPongRender) Instance(name string, data interface{}) render.Render {
+	return NgHTML{
+		Template: n.Template,
+		Name:     name,
+		Data:     data,
+	}
+}
+func NewNgPongRender() *NgPongRender {
+	return &NgPongRender{Template: map[string]*pongo2.Template{}}
 }

@@ -33,12 +33,8 @@
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
-			"Comment": "v0.6",
-			"Rev": "e2fa89777e344782ef5d31929f095f4589c35dcc"
-		},
-		{
-			"ImportPath": "github.com/julienschmidt/httprouter",
-			"Rev": "999ba04938b528fb4fb859231ee929958b8db4a6"
+			"Comment": "v1.0rc1-7-g35fd7fb",
+			"Rev": "35fd7fb48050057729ec7336d84b6ed1a7dd7fd7"
 		},
 		{
 			"ImportPath": "github.com/kr/pretty",
@@ -48,6 +44,10 @@
 		{
 			"ImportPath": "github.com/kr/text",
 			"Rev": "6807e777504f54ad073ecef66747de158294b639"
+		},
+		{
+			"ImportPath": "github.com/manucorporat/sse",
+			"Rev": "b7eeebd8987e6b233e43db2551d43f71b2e115d5"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
@@ -95,6 +95,15 @@
 		{
 			"ImportPath": "golang.org/x/crypto/openpgp",
 			"Rev": "5c68cfdf2a545b5ff576c075b459d1fc0c606f82"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "621fff363a1d9ad7fdd0bfa9d80a42881267deb4"
+		},
+		{
+			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
+			"Comment": "v5.4",
+			"Rev": "07cbdd2e6dfd947b002e83c13b775c7580fab2d5"
 		},
 		{
 			"ImportPath": "gopkg.in/mgo.v2",

@@ -6,7 +6,7 @@ import (
 )
 
 type Errors struct {
-	Errors []Error `json:"errors"`
+	Errors []*Error `json:"errors"`
 }
 
 func (e *Errors) StatusCode() int {
@@ -44,7 +44,7 @@ func SetErrors(c *gin.Context) {
 
 func AddError(c *gin.Context, e Error) {
 	errors := c.MustGet("errors").(*Errors)
-	errors.Errors = append(errors.Errors, e)
+	errors.Errors = append(errors.Errors, &e)
 }
 func GetErrors(c *gin.Context) *Errors {
 	return c.MustGet("errors").(*Errors)
