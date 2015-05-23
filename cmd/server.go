@@ -16,12 +16,9 @@ func Server() {
 	if err != nil {
 		panic(err)
 	}
-	app := gin.New()
-	app.Use(gin.Logger())
-	app.Use(middleware.Recovery())
+	app := gin.Default()
 	app.Use(middleware.ErrorHandler())
 	app.Static("/public", "./public")
-	app.LoadHTMLGlob("templates/*")
 	app.HTMLRender = helpers.NewNgPongRender()
 
 	homeRouter := routes.Home{}

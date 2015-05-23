@@ -2,7 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	"github.com/golang-vietnam/forum/helpers"
 	"github.com/golang-vietnam/forum/models"
 	"github.com/golang-vietnam/forum/resources"
 	. "github.com/smartystreets/goconvey/convey"
@@ -34,12 +33,11 @@ func TestUser(t *testing.T) {
 			Convey("Create exist user should response status 400 and exist message", func() {
 				response := do_request("POST", url, user)
 				body := parse_response(response)
-				var responseData helpers.Errors
+				var responseData Error
 				err := json.Unmarshal(body, &responseData)
 				So(err, ShouldBeNil)
 				So(response.StatusCode, ShouldEqual, 400)
-				So(responseData.Errors[0].Title, ShouldEqual, "Bad Request")
-				So(responseData.Errors[0].Detail, ShouldEqual, "This user has been exist!")
+				So(responseData.Message, ShouldEqual, "This user has been exist!")
 			})
 		})
 	})

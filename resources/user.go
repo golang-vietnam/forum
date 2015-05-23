@@ -1,7 +1,7 @@
 package resources
 
 import (
-	h "github.com/golang-vietnam/forum/helpers"
+	"errors"
 	m "github.com/golang-vietnam/forum/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -22,18 +22,15 @@ func (r ResourceUser) GetById(id bson.ObjectId) (m.User, error) {
 	return user, err
 }
 
-func (r ResourceUser) Create(u *m.User) h.Error {
+func (r ResourceUser) Create(u *m.User) error {
 	u.Id = bson.NewObjectId()
-	err := collection("user").Insert(u)
-	if err != nil {
+	if err := collection("user").Insert(u); err != nil {
 		if mgo.IsDup(err) {
-			badRequest := h.ErrBadRequest
-			badRequest.Detail = "This user has been exist!"
-			return badRequest
+			return errors.New("This user has been exist!")
 		}
 		panic(err)
 	}
-	return h.Error{}
+	return nil
 }
 
 func (r ResourceUser) RemoveById(id bson.ObjectId) error {

@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+type Error struct {
+	Message string `json:message`
+}
+
 func getServer() string {
 	viper.Set("env", "testing")
 	viper.SetConfigName("config")
