@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/golang-vietnam/forum/config"
+	"gopkg.in/bluesuncorp/validator.v5"
 	"gopkg.in/mgo.v2"
 	"time"
 )
@@ -9,6 +10,7 @@ import (
 var (
 	mongoSession *mgo.Session
 	dataBase     string
+	valdate      = validator.New("validate", validator.BakedInValidators)
 )
 
 func InitDb() error {
@@ -28,11 +30,10 @@ func InitDb() error {
 }
 
 func index() error {
-	err := collection("user").EnsureIndex(mgo.Index{
+	return collection("user").EnsureIndex(mgo.Index{
 		Key:    []string{"email"},
 		Unique: true,
 	})
-	return err
 }
 
 func collection(c string) *mgo.Collection {
