@@ -17,7 +17,7 @@ func TestUser(t *testing.T) {
 
 	Convey("POST create user", t, func() {
 
-		url := server + "/user/"
+		url := server + "/api/user/"
 		Convey("Create not exist user should response status 201 and correct error data.", func() {
 
 			user := &models.User{Email: "ntnguyen@ubisen.com", Name: "Nguyen The Nguyen"}

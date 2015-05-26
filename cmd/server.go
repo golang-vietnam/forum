@@ -28,7 +28,7 @@ func Server() {
 	}
 
 	userRouter := &routes.User{}
-	userGroup := app.Group("/user")
+	userGroup := app.Group("api/user")
 	{
 		userGroup.GET("/", userRouter.Index)
 		userGroup.POST("/", userRouter.Create)
