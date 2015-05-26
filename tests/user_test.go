@@ -40,5 +40,25 @@ func TestUser(t *testing.T) {
 				So(responseData.Message, ShouldEqual, "This user has been exist!")
 			})
 		})
+		Convey("Create with invalid email should return status 400 and email invalid message", func() {
+			user := &models.User{Email: "invalidemail", Name: "invalidEmail"}
+			response := do_request("POST", url, user)
+			body := parse_response(response)
+			var responseData Error
+			err := json.Unmarshal(body, &responseData)
+			So(err, ShouldBeNil)
+			So(response.StatusCode, ShouldEqual, 400)
+			So(responseData.Message, ShouldEqual, "Email invalid")
+		})
+		Convey("Create with empty email should return status 400 and email required message", func() {
+			user := &models.User{Name: "Empty Email"}
+			response := do_request("POST", url, user)
+			body := parse_response(response)
+			var responseData Error
+			err := json.Unmarshal(body, &responseData)
+			So(err, ShouldBeNil)
+			So(response.StatusCode, ShouldEqual, 400)
+			So(responseData.Message, ShouldEqual, "Email is required")
+		})
 	})
 }

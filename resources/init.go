@@ -2,7 +2,6 @@ package resources
 
 import (
 	"github.com/golang-vietnam/forum/config"
-	"gopkg.in/bluesuncorp/validator.v5"
 	"gopkg.in/mgo.v2"
 	"time"
 )
@@ -10,7 +9,6 @@ import (
 var (
 	mongoSession *mgo.Session
 	dataBase     string
-	valdate      = validator.New("validate", validator.BakedInValidators)
 )
 
 func InitDb() error {

@@ -19,7 +19,7 @@ func Server() {
 	app := gin.Default()
 	app.Use(middleware.ErrorHandler())
 	app.Static("/public", "./public")
-	app.HTMLRender = helpers.NewNgPongRender()
+	app.HTMLRender = helpers.NewPongRender()
 
 	homeRouter := routes.Home{}
 	homeGroup := app.Group("/")

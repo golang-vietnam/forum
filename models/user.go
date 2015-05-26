@@ -8,7 +8,7 @@ import (
 type User struct {
 	Id           bson.ObjectId `bson:"_id,omitempty" json:"_id"`
 	Name         string        `bson:"name" json:"name"`
-	Email        string        `bson:"email" json:"email" validate:"required,email"`
+	Email        string        `bson:"email" json:"email" binding:"required,email"`
 	Password     string        `bson:"password" json:"password"`
 	LastActivate time.Time     `bson:"last_activate" json:"last_activate"`
 	Image        string        `bson:"image" json:"image"`

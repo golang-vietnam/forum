@@ -15,6 +15,7 @@ func (u *User) Index(c *gin.Context) {
 func (u *User) Create(c *gin.Context) {
 	var user models.User
 	if err := c.Bind(&user); err != nil {
+		c.Error(userResource.ParseError(err))
 		return
 	}
 	if err := userResource.Create(&user); err != nil {

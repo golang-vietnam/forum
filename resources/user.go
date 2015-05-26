@@ -2,7 +2,9 @@ package resources
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-vietnam/forum/models"
+	"gopkg.in/bluesuncorp/validator.v5"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -10,23 +12,20 @@ import (
 type ResourceUser struct {
 }
 
-func (r ResourceUser) List() ([]models.User, error) {
+func (r *ResourceUser) List() ([]models.User, error) {
 	var users []models.User
 	err := collection("user").Find(nil).All(&users)
 	return users, err
 }
 
-func (r ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
+func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
 	var user models.User
 	err := collection("user").FindId(id).One(&user)
 	return user, err
 }
 
-func (r ResourceUser) Create(u *models.User) error {
+func (r *ResourceUser) Create(u *models.User) error {
 	u.Id = bson.NewObjectId()
-	if err := r.Validate(u); err != nil {
-		return err
-	}
 	if err := collection("user").Insert(u); err != nil {
 		if mgo.IsDup(err) {
 			return errors.New("This user has been exist!")
@@ -36,14 +35,19 @@ func (r ResourceUser) Create(u *models.User) error {
 	return nil
 }
 
-func (r ResourceUser) RemoveById(id bson.ObjectId) error {
+func (r *ResourceUser) RemoveById(id bson.ObjectId) error {
 	return collection("user").RemoveId(id)
 }
 
-func (r ResourceUser) Validate(u *models.User) error {
-
-	if err := valdate.Struct(u); err != nil {
-		for _, v := range valdate.Struct(u).Errors {
+func (r *ResourceUser) Validate(u *models.User) error {
+	if err := binding.Validate(u); err != nil {
+		return r.ParseError(err)
+	}
+	return nil
+}
+func (r *ResourceUser) ParseError(err error) error {
+	if errs, ok := err.(*validator.StructErrors); ok {
+		for _, v := range errs.Errors {
 			switch v.Field {
 			case "Email":
 				switch v.Tag {
@@ -58,6 +62,8 @@ func (r ResourceUser) Validate(u *models.User) error {
 				return nil
 			}
 		}
+	} else {
+		panic("Can not parse error")
 	}
 
 	return nil

@@ -7,43 +7,43 @@ import (
 )
 
 // Nguyen The Nguyen implements for Gin 1.0
-type NgHTML struct {
+type HTML struct {
 	Template map[string]*pongo2.Template
 	Name     string
 	Data     interface{}
 }
 
-func (n NgHTML) Write(w http.ResponseWriter) error {
-	file := n.Name
-	ctx := n.Data.(pongo2.Context)
+func (h HTML) Write(w http.ResponseWriter) error {
+	file := h.Name
+	ctx := h.Data.(pongo2.Context)
 
 	var t *pongo2.Template
 
-	if tmpl, ok := n.Template[file]; ok {
+	if tmpl, ok := h.Template[file]; ok {
 		t = tmpl
 	} else {
-		tmpl, err := pongo2.FromFile(file)
+		tmpl, err := pongo2.FromCache(file)
 		if err != nil {
 			return err
 		}
-		n.Template[file] = tmpl
+		h.Template[file] = tmpl
 		t = tmpl
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	return t.ExecuteWriter(ctx, w)
 }
 
-type NgPongRender struct {
+type PongRender struct {
 	Template map[string]*pongo2.Template
 }
 
-func (n *NgPongRender) Instance(name string, data interface{}) render.Render {
-	return NgHTML{
-		Template: n.Template,
+func (p *PongRender) Instance(name string, data interface{}) render.Render {
+	return HTML{
+		Template: p.Template,
 		Name:     name,
 		Data:     data,
 	}
 }
-func NewNgPongRender() *NgPongRender {
-	return &NgPongRender{Template: map[string]*pongo2.Template{}}
+func NewPongRender() *PongRender {
+	return &PongRender{Template: map[string]*pongo2.Template{}}
 }
