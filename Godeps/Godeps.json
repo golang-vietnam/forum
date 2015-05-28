@@ -37,6 +37,18 @@
 			"Rev": "35fd7fb48050057729ec7336d84b6ed1a7dd7fd7"
 		},
 		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "215affda49addc4c8ef7e2534915df2c8c35c6cd"
+		},
+		{
+			"ImportPath": "github.com/gorilla/securecookie",
+			"Rev": "8e98dd730fc43f1383f19615db6f2e702c9738e8"
+		},
+		{
+			"ImportPath": "github.com/gorilla/sessions",
+			"Rev": "f61c3ec2cf65d69e7efedfd4d060fe128882c951"
+		},
+		{
 			"ImportPath": "github.com/kr/pretty",
 			"Comment": "go.weekly.2011-12-22-26-gcb0850c",
 			"Rev": "cb0850c1681cbca3233e84f7e6ec3e4c3f352085"
@@ -48,6 +60,10 @@
 		{
 			"ImportPath": "github.com/manucorporat/sse",
 			"Rev": "b7eeebd8987e6b233e43db2551d43f71b2e115d5"
+		},
+		{
+			"ImportPath": "github.com/markbates/goth",
+			"Rev": "3440a6041e326abf9a899302b72d48a80dd051a2"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
@@ -99,6 +115,10 @@
 		{
 			"ImportPath": "golang.org/x/net/context",
 			"Rev": "621fff363a1d9ad7fdd0bfa9d80a42881267deb4"
+		},
+		{
+			"ImportPath": "golang.org/x/oauth2",
+			"Rev": "b5adcc2dcdf009d0391547edc6ecbaff889f5bb9"
 		},
 		{
 			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",

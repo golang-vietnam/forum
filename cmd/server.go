@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers"
@@ -12,11 +13,22 @@ import (
 
 func Server() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	err := resources.InitDb()
-	if err != nil {
+
+	if err := resources.InitDb(); err != nil {
 		panic(err)
 	}
+	var (
+		urlAuth   = "http://" + config.GetServer("host") + ":" + config.GetServer("port") + "/api/auth/"
+		authsConf = map[string][]string{
+			// "local":    []string{"", "", urlAuth + "/callback?provider=local"},
+			"facebook": []string{"1578087022454903", "2aff5458c8645a998103d00c99085938", urlAuth + "/callback?provider=facebook"},
+			// "google":   []string{"", "", urlAuth + "/callback?provider=google"},
+			// "github":   []string{"", "", urlAuth + "/callback?provider=github"},
+		}
+	)
+	fmt.Println(urlAuth)
 	app := gin.Default()
+	app.Use(middleware.Goth(authsConf))
 	app.Use(middleware.ErrorHandler())
 	app.Static("/public", "./public")
 	app.HTMLRender = helpers.NewPongRender()
@@ -33,6 +45,13 @@ func Server() {
 		userGroup.GET("/", userRouter.Index)
 		userGroup.POST("/", userRouter.Create)
 	}
+	authRouter := &routes.Auth{}
+	authGroup := app.Group("api/auth")
+	{
+		authGroup.GET("/", authRouter.Provider)
+		authGroup.GET("/callback", authRouter.CallBack)
+	}
+
 	adminGroup := app.Group("/admin")
 	{
 		adminGroup.GET("/", homeRouter.AdminDashboard)
@@ -42,4 +61,5 @@ func Server() {
 		}
 	}
 	app.Run(config.GetServer("host") + ":" + config.GetServer("port"))
+
 }
