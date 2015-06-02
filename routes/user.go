@@ -3,14 +3,13 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/models"
-	"net/http"
 )
 
 type User struct {
 }
 
 func (u *User) Index(c *gin.Context) {
-	c.String(http.StatusOK, "User page")
+	c.String(200, "User page")
 }
 func (u *User) Create(c *gin.Context) {
 	var user models.User
@@ -23,9 +22,4 @@ func (u *User) Create(c *gin.Context) {
 		return
 	}
 	c.JSON(201, user)
-}
-
-// Use for Admin page
-func (u *User) AdminAllUser(c *gin.Context) {
-	c.String(http.StatusOK, "Admin all user page")
 }

@@ -20,8 +20,7 @@ func Server() {
 	var (
 		urlAuth   = "http://" + config.GetServer("host") + ":" + config.GetServer("port") + "/api/auth/"
 		authsConf = map[string][]string{
-			// "local":    []string{"", "", urlAuth + "/callback?provider=local"},
-			"facebook": []string{"1578087022454903", "2aff5458c8645a998103d00c99085938", urlAuth + "/callback?provider=facebook"},
+			"facebook": []string{"1578087022454903", "2aff5458c8645a998103d00c99085938", urlAuth + "callback?provider=facebook"},
 			// "google":   []string{"", "", urlAuth + "/callback?provider=google"},
 			// "github":   []string{"", "", urlAuth + "/callback?provider=github"},
 		}
@@ -50,15 +49,6 @@ func Server() {
 	{
 		authGroup.GET("/", authRouter.Provider)
 		authGroup.GET("/callback", authRouter.CallBack)
-	}
-
-	adminGroup := app.Group("/admin")
-	{
-		adminGroup.GET("/", homeRouter.AdminDashboard)
-		userAdmin := adminGroup.Group("/user")
-		{
-			userAdmin.GET("/", userRouter.AdminAllUser)
-		}
 	}
 	app.Run(config.GetServer("host") + ":" + config.GetServer("port"))
 

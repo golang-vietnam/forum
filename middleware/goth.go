@@ -2,19 +2,13 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
-
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/facebook"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gplus"
 	"net/http"
-	// "github.com/markbates/goth/providers/lastfm"
-	// "github.com/markbates/goth/providers/linkedin"
-	// "github.com/markbates/goth/providers/spotify"
-	// "github.com/markbates/goth/providers/twitter"
 )
 
 // 0 => not in list, 1 => unique, > 1 => duplicate
@@ -40,7 +34,7 @@ func mapProvider(auths map[string][]string) error {
 	for providerName, providerSetting := range auths {
 
 		if isUnique(auths, providerName) != 1 {
-			return errors.New("Providers duplicate")
+			return errors.New("Providers duplicate") //Should unique this
 		}
 		switch providerName {
 		case "facebook":
@@ -49,8 +43,8 @@ func mapProvider(auths map[string][]string) error {
 			useProviders = append(useProviders, gplus.New(providerSetting[0], providerSetting[1], providerSetting[2])) //(providerSetting...)
 		case "github":
 			useProviders = append(useProviders, github.New(providerSetting[0], providerSetting[1], providerSetting[2])) //(providerSetting...)
-		case "local":
-			fmt.Println("will implement")
+		default:
+			return errors.New("Provider required")
 		}
 	}
 	goth.UseProviders(useProviders...)

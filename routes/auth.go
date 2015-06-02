@@ -17,6 +17,5 @@ func (a *Auth) CallBack(c *gin.Context) {
 	c.JSON(200, user)
 }
 func (a *Auth) Provider(c *gin.Context) {
-
 	gothic.BeginAuthHandler(c.Writer, c.Request)
 }
