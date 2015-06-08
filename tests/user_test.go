@@ -37,6 +37,7 @@ func TestUser(t *testing.T) {
 				err := json.Unmarshal(body, &responseData)
 				So(err, ShouldBeNil)
 				So(response.StatusCode, ShouldEqual, 400)
+				So(responseData.Id, ShouldEqual, "USER_EXIST")
 				So(responseData.Message, ShouldEqual, "This user has been exist!")
 			})
 		})
@@ -48,6 +49,7 @@ func TestUser(t *testing.T) {
 			err := json.Unmarshal(body, &responseData)
 			So(err, ShouldBeNil)
 			So(response.StatusCode, ShouldEqual, 400)
+			So(responseData.Id, ShouldEqual, "USER_EMAIL_INVALID")
 			So(responseData.Message, ShouldEqual, "Email invalid")
 		})
 		Convey("Create with empty email should return status 400 and email required message", func() {
@@ -58,6 +60,7 @@ func TestUser(t *testing.T) {
 			err := json.Unmarshal(body, &responseData)
 			So(err, ShouldBeNil)
 			So(response.StatusCode, ShouldEqual, 400)
+			So(responseData.Id, ShouldEqual, "USER_EMAIL_REQUIRED")
 			So(responseData.Message, ShouldEqual, "Email is required")
 		})
 	})

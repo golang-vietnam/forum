@@ -11,6 +11,7 @@ import (
 
 type Error struct {
 	Message string `json:message`
+	Id      string `json:id`
 }
 
 func getServer() string {

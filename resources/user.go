@@ -1,7 +1,6 @@
 package resources
 
 import (
-	// "errors"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
@@ -9,6 +8,15 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
+
+type ResourceUserInterface interface {
+	List() ([]models.User, error)
+	GetById(id bson.ObjectId) (models.User, error)
+	Create(u *models.User) error
+	RemoveById(id bson.ObjectId) error
+	Validate(u *models.User) error
+	ParseError(err error) error
+}
 
 type ResourceUser struct {
 }
@@ -53,7 +61,7 @@ func (r *ResourceUser) ParseError(err error) error {
 			case "Email":
 				switch v.Tag {
 				case "required":
-					return &apiErrors.USER_EMAIL_REQUIRER
+					return &apiErrors.USER_EMAIL_REQUIRED
 				case "email":
 					return &apiErrors.USER_EMAIL_INVALID
 				default:
@@ -68,9 +76,4 @@ func (r *ResourceUser) ParseError(err error) error {
 	}
 
 	return nil
-}
-func ClearAllUser() {
-	if _, err := collection("user").RemoveAll(nil); err != nil {
-		panic(err)
-	}
 }

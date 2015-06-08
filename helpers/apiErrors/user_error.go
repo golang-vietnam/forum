@@ -6,8 +6,8 @@ var (
 		Message: "This user has been exist!",
 		Status:  400,
 	}
-	USER_EMAIL_REQUIRER = Error{
-		Id:      "USER_EMAIL_REQUIRER",
+	USER_EMAIL_REQUIRED = Error{
+		Id:      "USER_EMAIL_REQUIRED",
 		Message: "Email is required",
 		Status:  400,
 	}

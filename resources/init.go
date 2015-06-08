@@ -43,3 +43,9 @@ func CloseDb() {
 		mongoSession.Close()
 	}
 }
+
+func ClearAllUser() {
+	if _, err := collection("user").RemoveAll(nil); err != nil {
+		panic(err)
+	}
+}
