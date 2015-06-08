@@ -17,3 +17,9 @@ func RequireLogin(secret string) gin.HandlerFunc {
 		}
 	}
 }
+func RequirePermission(role int) gin.HandlerFunc {
+	// fewfwef
+	return func(c *gin.Context) {
+
+	}
+}

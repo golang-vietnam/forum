@@ -1,8 +1,9 @@
 package resources
 
 import (
-	"errors"
+	// "errors"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
 	"gopkg.in/bluesuncorp/validator.v5"
 	"gopkg.in/mgo.v2"
@@ -24,11 +25,11 @@ func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
 	return user, err
 }
 
-func (r *ResourceUser) Create(u *models.User) error {
+func (r *ResourceUser) Create(u *models.User) *apiErrors.Error {
 	u.Id = bson.NewObjectId()
 	if err := collection("user").Insert(u); err != nil {
 		if mgo.IsDup(err) {
-			return errors.New("This user has been exist!")
+			return &apiErrors.USER_EXIST
 		}
 		panic(err)
 	}
@@ -45,16 +46,16 @@ func (r *ResourceUser) Validate(u *models.User) error {
 	}
 	return nil
 }
-func (r *ResourceUser) ParseError(err error) error {
+func (r *ResourceUser) ParseError(err error) *apiErrors.Error {
 	if errs, ok := err.(*validator.StructErrors); ok {
 		for _, v := range errs.Errors {
 			switch v.Field {
 			case "Email":
 				switch v.Tag {
 				case "required":
-					return errors.New("Email is required")
+					return &apiErrors.USER_EMAIL_REQUIRER
 				case "email":
-					return errors.New("Email invalid")
+					return &apiErrors.USER_EMAIL_INVALID
 				default:
 					return nil
 				}
