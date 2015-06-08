@@ -25,7 +25,7 @@ func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
 	return user, err
 }
 
-func (r *ResourceUser) Create(u *models.User) *apiErrors.Error {
+func (r *ResourceUser) Create(u *models.User) error {
 	u.Id = bson.NewObjectId()
 	if err := collection("user").Insert(u); err != nil {
 		if mgo.IsDup(err) {
@@ -46,7 +46,7 @@ func (r *ResourceUser) Validate(u *models.User) error {
 	}
 	return nil
 }
-func (r *ResourceUser) ParseError(err error) *apiErrors.Error {
+func (r *ResourceUser) ParseError(err error) error {
 	if errs, ok := err.(*validator.StructErrors); ok {
 		for _, v := range errs.Errors {
 			switch v.Field {

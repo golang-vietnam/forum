@@ -1,11 +1,5 @@
 package apiErrors
 
-type Error struct {
-	Id      string `json:"id"`
-	Message string `json:"message"`
-	Status  int    `json:"message"`
-}
-
 var (
 	USER_EXIST = Error{
 		Id:      "USER_EXIST",

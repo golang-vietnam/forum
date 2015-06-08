@@ -28,7 +28,7 @@ func Server() {
 	fmt.Println(urlAuth)
 	app := gin.Default()
 	app.Use(middleware.Goth(authsConf))
-	app.Use(middleware.ErorrHandler())
+	app.Use(middleware.ErrorHandler())
 	app.Static("/public", "./public")
 	app.HTMLRender = helpers.NewPongRender()
 
