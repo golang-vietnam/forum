@@ -18,24 +18,30 @@ type ResourceUserInterface interface {
 	ParseError(err error) error
 }
 
+func NewResourceUser() ResourceUserInterface {
+	return &ResourceUser{}
+}
+
 type ResourceUser struct {
 }
 
+const colName = "user"
+
 func (r *ResourceUser) List() ([]models.User, error) {
 	var users []models.User
-	err := collection("user").Find(nil).All(&users)
+	err := collection(colName).Find(nil).All(&users)
 	return users, err
 }
 
 func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
 	var user models.User
-	err := collection("user").FindId(id).One(&user)
+	err := collection(colName).FindId(id).One(&user)
 	return user, err
 }
 
 func (r *ResourceUser) Create(u *models.User) error {
 	u.Id = bson.NewObjectId()
-	if err := collection("user").Insert(u); err != nil {
+	if err := collection(colName).Insert(u); err != nil {
 		if mgo.IsDup(err) {
 			return &apiErrors.USER_EXIST
 		}
@@ -45,7 +51,7 @@ func (r *ResourceUser) Create(u *models.User) error {
 }
 
 func (r *ResourceUser) RemoveById(id bson.ObjectId) error {
-	return collection("user").RemoveId(id)
+	return collection(colName).RemoveId(id)
 }
 
 func (r *ResourceUser) Validate(u *models.User) error {

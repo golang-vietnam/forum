@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/golang-vietnam/forum/resources"
+	r "github.com/golang-vietnam/forum/resources"
 )
 
 var (
-	userResource = resources.ResourceUser{}
+	userResource = r.NewResourceUser()
 )

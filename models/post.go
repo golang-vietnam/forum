@@ -12,7 +12,7 @@ type Post struct {
 	User     User          `bson:"user" json:"user"`
 	Title    string        `bson:"title" json:"title"`
 	Content  string        `bson:"content" json:"content"`
-	Qoute    string        `bson:"qoute" json:"qoute"`
+	Quote    string        `bson:"quote" json:"quote"`
 	Image    string        `bson:"image" json:"image"`
 	View     int           `bson:"view" json:"view"`
 	Reply    int           `bson:"reply" json:"reply"`
