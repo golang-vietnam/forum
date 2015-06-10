@@ -2,8 +2,8 @@ package tests
 
 import (
 	"encoding/json"
+	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/models"
-	"github.com/golang-vietnam/forum/resources"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )
@@ -11,16 +11,16 @@ import (
 func TestUser(t *testing.T) {
 	server := getServer()
 
-	resources.InitDb()
-	defer resources.CloseDb()
-	resources.ClearAllUser()
+	database.InitDb()
+	defer database.CloseDb()
+	database.ClearAllUser()
 
 	Convey("POST create user", t, func() {
 
-		url := server + "/api/user/"
+		url := server + "/v1/user/"
 		Convey("Create not exist user should response status 201 and correct error data.", func() {
 
-			user := &models.User{Email: "ntnguyen@ubisen.com", Name: "Nguyen The Nguyen"}
+			user := &models.User{Email: "ntnguyen@ubisen.com", Name: "Nguyen The Nguyen", Password: "golang"}
 			response := do_request("POST", url, user)
 			body := parse_response(response)
 			var responseData models.User
@@ -40,6 +40,10 @@ func TestUser(t *testing.T) {
 				So(responseData.Id, ShouldEqual, "USER_EXIST")
 				So(responseData.Message, ShouldEqual, "This user has been exist!")
 			})
+			// Convey("User should in database", func() {
+
+			// })
+
 		})
 		Convey("Create with invalid email should return status 400 and email invalid message", func() {
 			user := &models.User{Email: "invalidemail", Name: "invalidEmail"}
@@ -62,6 +66,17 @@ func TestUser(t *testing.T) {
 			So(response.StatusCode, ShouldEqual, 400)
 			So(responseData.Id, ShouldEqual, "USER_EMAIL_REQUIRED")
 			So(responseData.Message, ShouldEqual, "Email is required")
+		})
+		Convey("Create with empty password should return status 400 and password required message", func() {
+			user := &models.User{Name: "Ntn", Email: "ntnguyen@ubisen.com"}
+			response := do_request("POST", url, user)
+			body := parse_response(response)
+			var responseData Error
+			err := json.Unmarshal(body, &responseData)
+			So(err, ShouldBeNil)
+			So(response.StatusCode, ShouldEqual, 400)
+			So(responseData.Id, ShouldEqual, "USER_PASSWORD_REQUIRED")
+			So(responseData.Message, ShouldEqual, "Password is required")
 		})
 	})
 }

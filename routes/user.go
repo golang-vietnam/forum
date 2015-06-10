@@ -11,6 +11,16 @@ type User struct {
 func (u *User) Index(c *gin.Context) {
 	c.String(200, "User page")
 }
+
+/**
+
+	TODO:
+	- Parse request with validate
+	- Create user with valid request
+	- Reponse new user
+
+**/
+
 func (u *User) Create(c *gin.Context) {
 	var user models.User
 	if err := c.Bind(&user); err != nil {
@@ -18,6 +28,7 @@ func (u *User) Create(c *gin.Context) {
 		return
 	}
 	if err := userResource.Create(&user); err != nil {
+
 		c.AbortWithError(400, err)
 		return
 	}

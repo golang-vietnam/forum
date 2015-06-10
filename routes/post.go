@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/golang-vietnam/forum/models"
+	// "github.com/golang-vietnam/forum/models"
 )
 
 type Post struct {

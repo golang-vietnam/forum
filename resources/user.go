@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/bluesuncorp/validator.v5"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -16,6 +17,8 @@ type ResourceUserInterface interface {
 	RemoveById(id bson.ObjectId) error
 	Validate(u *models.User) error
 	ParseError(err error) error
+	IsMatchPassword(hashedPassword string, password string) bool
+	HashPassword(password string) string
 }
 
 func NewResourceUser() ResourceUserInterface {
@@ -25,23 +28,40 @@ func NewResourceUser() ResourceUserInterface {
 type ResourceUser struct {
 }
 
-const colName = "user"
+const userColName = "user"
 
 func (r *ResourceUser) List() ([]models.User, error) {
 	var users []models.User
-	err := collection(colName).Find(nil).All(&users)
+	err := collection(userColName).Find(nil).All(&users)
 	return users, err
 }
 
 func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
 	var user models.User
-	err := collection(colName).FindId(id).One(&user)
+	err := collection(userColName).FindId(id).One(&user)
 	return user, err
 }
 
+/**
+
+	TODO:
+	- Check password not be nil
+	- Hash password
+	- Gen new MongoObjectId for Id
+	- Set role user to 0
+	- Insert user to db
+	- Check error return is exist
+
+**/
+
 func (r *ResourceUser) Create(u *models.User) error {
+	if u.Password == "" {
+		return &apiErrors.USER_PASSWORD_REQUIRED
+	}
+	u.Password = r.HashPassword(u.Password)
 	u.Id = bson.NewObjectId()
-	if err := collection(colName).Insert(u); err != nil {
+	u.Role = 0
+	if err := collection(userColName).Insert(u); err != nil {
 		if mgo.IsDup(err) {
 			return &apiErrors.USER_EXIST
 		}
@@ -51,7 +71,7 @@ func (r *ResourceUser) Create(u *models.User) error {
 }
 
 func (r *ResourceUser) RemoveById(id bson.ObjectId) error {
-	return collection(colName).RemoveId(id)
+	return collection(userColName).RemoveId(id)
 }
 
 func (r *ResourceUser) Validate(u *models.User) error {
@@ -70,6 +90,26 @@ func (r *ResourceUser) ParseError(err error) error {
 					return &apiErrors.USER_EMAIL_REQUIRED
 				case "email":
 					return &apiErrors.USER_EMAIL_INVALID
+				case "max":
+					return &apiErrors.USER_EMAIL_MAX
+				case "min":
+					return &apiErrors.USER_EMAIL_MIN
+				default:
+					return nil
+				}
+			case "Password":
+				switch v.Tag {
+				case "required":
+					return &apiErrors.USER_PASSWORD_REQUIRED
+				default:
+					return nil
+				}
+			case "Role":
+				switch v.Tag {
+				case "max":
+					return &apiErrors.USER_ROLE_MAX
+				case "min":
+					return &apiErrors.USER_ROLE_MIN
 				default:
 					return nil
 				}
@@ -82,4 +122,17 @@ func (r *ResourceUser) ParseError(err error) error {
 	}
 
 	return nil
+}
+func (r *ResourceUser) HashPassword(password string) string {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	if err != nil {
+		panic(err)
+	}
+	return string(hashedPassword)
+}
+func (r *ResourceUser) IsMatchPassword(hashedPassword string, password string) bool {
+	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
+		return false
+	}
+	return true
 }
