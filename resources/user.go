@@ -10,11 +10,13 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+const userColName = "user"
+
 type ResourceUserInterface interface {
-	List() ([]models.User, error)
-	GetById(id bson.ObjectId) (models.User, error)
+	ListAll() []models.User
+	GetById(id bson.ObjectId) models.User
 	Create(u *models.User) error
-	RemoveById(id bson.ObjectId) error
+	RemoveById(id bson.ObjectId)
 	Validate(u *models.User) []error
 	ParseError(err error) []error
 	IsMatchPassword(hashedPassword string, password string) bool
@@ -22,24 +24,26 @@ type ResourceUserInterface interface {
 }
 
 func NewResourceUser() ResourceUserInterface {
-	return &ResourceUser{}
+	return &resourceUser{}
 }
 
-type ResourceUser struct {
+type resourceUser struct {
 }
 
-const userColName = "user"
-
-func (r *ResourceUser) List() ([]models.User, error) {
+func (r *resourceUser) ListAll() []models.User {
 	var users []models.User
-	err := collection(userColName).Find(nil).All(&users)
-	return users, err
+	if err := collection(userColName).Find(nil).All(&users); err != nil {
+		panic(err)
+	}
+	return users
 }
 
-func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
+func (r *resourceUser) GetById(id bson.ObjectId) models.User {
 	var user models.User
-	err := collection(userColName).FindId(id).One(&user)
-	return user, err
+	if err := collection(userColName).FindId(id).One(&user); err != nil {
+		panic(err)
+	}
+	return user
 }
 
 /**
@@ -48,13 +52,13 @@ func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
 	- Check password not be nil
 	- Hash password
 	- Gen new MongoObjectId for Id
-	- Set role user to NormalUser
+	- Set role user to NormalUser for attack
 	- Insert user to db
 	- Check error return is exist
 
 **/
 
-func (r *ResourceUser) Create(u *models.User) error {
+func (r *resourceUser) Create(u *models.User) error {
 	if u.Password == "" {
 		return &apiErrors.USER_PASSWORD_REQUIRED
 	}
@@ -70,17 +74,27 @@ func (r *ResourceUser) Create(u *models.User) error {
 	return nil
 }
 
-func (r *ResourceUser) RemoveById(id bson.ObjectId) error {
-	return collection(userColName).RemoveId(id)
+func (r *resourceUser) RemoveById(id bson.ObjectId) {
+	if err := collection(userColName).RemoveId(id); err != nil {
+		panic(err)
+	}
 }
 
-func (r *ResourceUser) Validate(u *models.User) []error {
+func (r *resourceUser) Validate(u *models.User) []error {
 	if err := binding.Validate(u); err != nil {
 		return r.ParseError(err)
 	}
 	return []error{}
 }
-func (r *ResourceUser) ParseError(err error) []error {
+
+/**
+
+	TODO:
+	- Parse validator error to api error
+
+**/
+
+func (r *resourceUser) ParseError(err error) []error {
 	var errors []error
 	if errs, ok := err.(*validator.StructErrors); ok {
 		for _, v := range errs.Errors {
@@ -116,14 +130,14 @@ func (r *ResourceUser) ParseError(err error) []error {
 
 	return errors
 }
-func (r *ResourceUser) HashPassword(password string) string {
+func (r *resourceUser) HashPassword(password string) string {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		panic(err)
 	}
 	return string(hashedPassword)
 }
-func (r *ResourceUser) IsMatchPassword(hashedPassword string, password string) bool {
+func (r *resourceUser) IsMatchPassword(hashedPassword string, password string) bool {
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
 		return false
 	}

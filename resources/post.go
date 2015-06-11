@@ -10,46 +10,55 @@ import (
 )
 
 type ResourcePostInterface interface {
-	ListAll() ([]models.Post, error)
-	ListPaging(limit int) ([]models.Post, error)
+	ListAll() []models.Post
+	ListPaging(page int, perPage int) []models.Post
 	GetById(id bson.ObjectId) (models.Post, error)
 	Create(u *models.Post) error
-	RemoveById(id bson.ObjectId) error
+	RemoveById(id bson.ObjectId)
 }
 
 func NewResourcePost() ResourcePostInterface {
-	return &ResourcePost{}
+	return &resourcePost{}
 }
 
-type ResourcePost struct {
+type resourcePost struct {
 }
 
 const postColName = "post"
 
-func (r *ResourcePost) ListAll() ([]models.Post, error) {
+func (r *resourcePost) ListAll() []models.Post {
 	var posts []models.Post
-	err := collection(postColName).Find(nil).All(&posts)
-	return posts, err
+	if err := collection(postColName).Find(nil).All(&posts); err != nil {
+		panic(err)
+	}
+	return posts
 }
 
-func (r *ResourcePost) ListPaging(limit int) ([]models.Post, error) {
+func (r *resourcePost) ListPaging(page int, perPage int) []models.Post {
+	if page < 0 || perPage < 0 {
+		panic("list paging post param invalid")
+	}
 	var posts []models.Post
-	err := collection(postColName).Find(nil).Limit(limit).All(&posts)
-	return posts, err
+	if err := collection(postColName).Find(nil).Limit(perPage).Skip(perPage * page).All(&posts); err != nil {
+		panic(err)
+	}
+	return posts
 }
 
-func (r *ResourcePost) GetById(id bson.ObjectId) (models.Post, error) {
+func (r *resourcePost) GetById(id bson.ObjectId) (models.Post, error) {
 	var post models.Post
 	err := collection(postColName).FindId(id).One(&post)
 	return post, err
 }
 
-func (r *ResourcePost) Create(p *models.Post) error {
+func (r *resourcePost) Create(p *models.Post) error {
 	p.Id = bson.NewObjectId()
 	err := collection(postColName).Insert(p)
 	return err
 }
 
-func (r *ResourcePost) RemoveById(id bson.ObjectId) error {
-	return collection(postColName).RemoveId(id)
+func (r *resourcePost) RemoveById(id bson.ObjectId) {
+	if err := collection(postColName).RemoveId(id); err != nil {
+		panic(err)
+	}
 }
