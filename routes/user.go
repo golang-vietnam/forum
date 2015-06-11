@@ -8,7 +8,7 @@ import (
 type User struct {
 }
 
-func (u *User) Index(c *gin.Context) {
+func (u *User) Detail(c *gin.Context) {
 	c.String(200, "User page")
 }
 
@@ -24,8 +24,12 @@ func (u *User) Index(c *gin.Context) {
 func (u *User) Create(c *gin.Context) {
 	var user models.User
 	if err := c.Bind(&user); err != nil {
-		c.Error(userResource.ParseError(err))
-		return
+		errors := userResource.ParseError(err)
+		if len(errors) > 0 {
+			c.Error(errors[0])
+			return
+		}
+
 	}
 	if err := userResource.Create(&user); err != nil {
 

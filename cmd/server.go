@@ -39,10 +39,11 @@ func Server() {
 	}
 
 	userRouter := &routes.User{}
+	list := []gin.HandlerFunc{userRouter.Create}
 	userGroup := app.Group("v1/user")
 	{
-		userGroup.GET("/", userRouter.Index)
-		userGroup.POST("/", userRouter.Create)
+		userGroup.GET("/", userRouter.Detail)
+		userGroup.POST("/", list...)
 	}
 	authRouter := &routes.Auth{}
 	authGroup := app.Group("v1/auth")

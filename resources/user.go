@@ -15,8 +15,8 @@ type ResourceUserInterface interface {
 	GetById(id bson.ObjectId) (models.User, error)
 	Create(u *models.User) error
 	RemoveById(id bson.ObjectId) error
-	Validate(u *models.User) error
-	ParseError(err error) error
+	Validate(u *models.User) []error
+	ParseError(err error) []error
 	IsMatchPassword(hashedPassword string, password string) bool
 	HashPassword(password string) string
 }
@@ -74,54 +74,49 @@ func (r *ResourceUser) RemoveById(id bson.ObjectId) error {
 	return collection(userColName).RemoveId(id)
 }
 
-func (r *ResourceUser) Validate(u *models.User) error {
+func (r *ResourceUser) Validate(u *models.User) []error {
 	if err := binding.Validate(u); err != nil {
 		return r.ParseError(err)
 	}
-	return nil
+	return []error{}
 }
-func (r *ResourceUser) ParseError(err error) error {
+func (r *ResourceUser) ParseError(err error) []error {
+	var errors []error
 	if errs, ok := err.(*validator.StructErrors); ok {
 		for _, v := range errs.Errors {
 			switch v.Field {
 			case "Email":
 				switch v.Tag {
 				case "required":
-					return &apiErrors.USER_EMAIL_REQUIRED
+					errors = append(errors, &apiErrors.USER_EMAIL_REQUIRED)
 				case "email":
-					return &apiErrors.USER_EMAIL_INVALID
+					errors = append(errors, &apiErrors.USER_EMAIL_INVALID)
 				case "max":
-					return &apiErrors.USER_EMAIL_MAX
+					errors = append(errors, &apiErrors.USER_EMAIL_MAX)
 				case "min":
-					return &apiErrors.USER_EMAIL_MIN
-				default:
-					return nil
+					errors = append(errors, &apiErrors.USER_EMAIL_MIN)
 				}
 			case "Password":
 				switch v.Tag {
 				case "required":
-					return &apiErrors.USER_PASSWORD_REQUIRED
+					errors = append(errors, &apiErrors.USER_PASSWORD_REQUIRED)
 				default:
 					return nil
 				}
 			case "Role":
 				switch v.Tag {
 				case "max":
-					return &apiErrors.USER_ROLE_MAX
+					errors = append(errors, &apiErrors.USER_ROLE_MAX)
 				case "min":
-					return &apiErrors.USER_ROLE_MIN
-				default:
-					return nil
+					errors = append(errors, &apiErrors.USER_ROLE_MIN)
 				}
-			default:
-				return nil
 			}
 		}
 	} else {
 		panic("Can not parse error")
 	}
 
-	return nil
+	return errors
 }
 func (r *ResourceUser) HashPassword(password string) string {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
