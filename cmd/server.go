@@ -8,6 +8,7 @@ import (
 	"github.com/golang-vietnam/forum/helpers"
 	"github.com/golang-vietnam/forum/middleware"
 	"github.com/golang-vietnam/forum/routes"
+	"github.com/spf13/viper"
 	"runtime"
 )
 
@@ -26,7 +27,14 @@ func Server() {
 		}
 	)
 	fmt.Println(urlAuth)
-	app := gin.Default()
+	app := gin.New()
+	if viper.Get("env") != "production" {
+		app.Use(gin.Logger())
+		app.Use(gin.Recovery())
+	} else {
+		app.Use(middleware.Recovery())
+	}
+
 	app.Use(middleware.Goth(authsConf))
 	app.Use(middleware.ErrorHandler())
 	app.Static("/public", "./public")

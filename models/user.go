@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+const (
+	NormalUser = 0
+	EditorUser = 1
+)
+
 type User struct {
 	Id           bson.ObjectId `bson:"_id,omitempty" json:"_id"`
 	Name         string        `bson:"name" json:"name"`

@@ -18,9 +18,16 @@ func TestUser(t *testing.T) {
 	database.InitDb()
 	defer database.CloseDb()
 	database.ClearAllUser()
+	url := server + "/v1/user/"
+
+	Convey("GET user", t, func() {
+		Convey("Get not exist user shoud return not found error", func() {
+			So(1, ShouldEqual, 1)
+		})
+	})
 
 	Convey("POST create user", t, func() {
-		url := server + "/v1/user/"
+
 		Convey("Create not exist user should response status 201 and correct user data.", func() {
 
 			user := &models.User{Email: "ntnguyen@ubisen.com", Name: "Nguyen The Nguyen", Password: "golang", Role: 2}

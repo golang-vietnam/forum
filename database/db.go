@@ -31,6 +31,7 @@ func InitDb() (*mgo.Session, error) {
 }
 
 func Index() error {
+	// Collection("user").E
 	return Collection("user").EnsureIndex(mgo.Index{
 		Key:    []string{"email"},
 		Unique: true,

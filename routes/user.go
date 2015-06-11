@@ -32,7 +32,6 @@ func (u *User) Create(c *gin.Context) {
 
 	}
 	if err := userResource.Create(&user); err != nil {
-
 		c.AbortWithError(400, err)
 		return
 	}

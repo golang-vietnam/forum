@@ -48,7 +48,7 @@ func (r *ResourceUser) GetById(id bson.ObjectId) (models.User, error) {
 	- Check password not be nil
 	- Hash password
 	- Gen new MongoObjectId for Id
-	- Set role user to 0
+	- Set role user to NormalUser
 	- Insert user to db
 	- Check error return is exist
 
@@ -60,7 +60,7 @@ func (r *ResourceUser) Create(u *models.User) error {
 	}
 	u.Password = r.HashPassword(u.Password)
 	u.Id = bson.NewObjectId()
-	u.Role = 0
+	u.Role = models.NormalUser
 	if err := collection(userColName).Insert(u); err != nil {
 		if mgo.IsDup(err) {
 			return &apiErrors.USER_EXIST
@@ -100,8 +100,6 @@ func (r *ResourceUser) ParseError(err error) []error {
 				switch v.Tag {
 				case "required":
 					errors = append(errors, &apiErrors.USER_PASSWORD_REQUIRED)
-				default:
-					return nil
 				}
 			case "Role":
 				switch v.Tag {
