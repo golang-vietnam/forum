@@ -33,7 +33,7 @@ func RequireLogin(secret string) gin.HandlerFunc {
 /**
 
 	TODO:
-	- If user not login as gin context get "user" is nill -> user role = 0
+	- If user not login as gin context get "user" is nill -> user role = normalUser
 	- If user has role < role param return access deny error
 	- If user has role >= role param -> pass
 
