@@ -10,7 +10,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-const userColName = "user"
+const userColName = "users"
 
 type ResourceUserInterface interface {
 	ListAll() []models.User

@@ -40,25 +40,43 @@ func Server() {
 	app.Static("/public", "./public")
 	app.HTMLRender = helpers.NewPongRender()
 
+	//Set up api v1
+	setupApiV1(app)
+
+	app.Run(config.GetServer("host") + ":" + config.GetServer("port"))
+}
+
+func setupApiV1(app *gin.Engine) {
+	//Home
 	homeRouter := routes.Home{}
-	homeGroup := app.Group("/v1")
+	v1Group := app.Group("/v1")
 	{
-		homeGroup.GET("/", homeRouter.Index)
+		v1Group.GET("/", homeRouter.Index)
 	}
 
+	//User
 	userRouter := &routes.User{}
 	list := []gin.HandlerFunc{userRouter.Create}
-	userGroup := app.Group("v1/user")
+	userGroup := v1Group.Group("/user")
 	{
 		userGroup.GET("/", userRouter.Detail)
 		userGroup.POST("/", list...)
 	}
+
+	//Post
+	postRouter := &routes.Post{}
+	postGroup := v1Group.Group("/post")
+	{
+		postGroup.GET("/", postRouter.Index)
+		postGroup.POST("/", postRouter.Create)
+		postGroup.GET("/:id", postRouter.GetById)
+	}
+
+	//Auth
 	authRouter := &routes.Auth{}
-	authGroup := app.Group("v1/auth")
+	authGroup := v1Group.Group("/auth")
 	{
 		authGroup.GET("/", authRouter.Provider)
 		authGroup.GET("/callback", authRouter.CallBack)
 	}
-	app.Run(config.GetServer("host") + ":" + config.GetServer("port"))
-
 }

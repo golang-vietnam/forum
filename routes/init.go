@@ -6,4 +6,5 @@ import (
 
 var (
 	userResource = r.NewResourceUser()
+	postResource = r.NewResourcePost()
 )

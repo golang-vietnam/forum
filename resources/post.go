@@ -12,6 +12,7 @@ import (
 type ResourcePostInterface interface {
 	ListAll() []models.Post
 	ListPaging(page int, perPage int) []models.Post
+	ListPagingByCategory(id bson.ObjectId, page int, perPage int) []models.Post
 	GetById(id bson.ObjectId) (models.Post, error)
 	Create(u *models.Post) error
 	RemoveById(id bson.ObjectId)
@@ -24,7 +25,7 @@ func NewResourcePost() ResourcePostInterface {
 type resourcePost struct {
 }
 
-const postColName = "post"
+const postColName = "posts"
 
 func (r *resourcePost) ListAll() []models.Post {
 	var posts []models.Post
@@ -40,6 +41,18 @@ func (r *resourcePost) ListPaging(page int, perPage int) []models.Post {
 	}
 	var posts []models.Post
 	if err := collection(postColName).Find(nil).Limit(perPage).Skip(perPage * page).All(&posts); err != nil {
+		panic(err)
+	}
+	return posts
+}
+
+func (r *resourcePost) ListPagingByCategory(categoryId bson.ObjectId, page int, perPage int) []models.Post {
+	if page < 0 || perPage < 0 {
+		panic("list paging post param invalid")
+	}
+	var posts []models.Post
+	//Not tested this query yet
+	if err := collection(postColName).Find(bson.M{"category._id": categoryId}).Limit(perPage).Skip(perPage * page).All(&posts); err != nil {
 		panic(err)
 	}
 	return posts
