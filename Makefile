@@ -1,4 +1,7 @@
-default: run
+default: autoReload
+
+autoReload:
+	@gin -a 8080 run
 
 run:
 	@go run forum.go start

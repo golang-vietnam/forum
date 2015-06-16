@@ -11,18 +11,20 @@ func showUsage() {
 	fmt.Println("Usage: forum <command>")
 	fmt.Println("=============================\n")
 	fmt.Println("Avaialable commands:")
-	fmt.Println("forum start    # run server")
-	fmt.Println("forum test # run test")
-	fmt.Println("forum deploy # run as deploy on host")
-
+	fmt.Println("'forum' or 'forum start'    # run server on develop mode")
+	fmt.Println("'forum test' # run server on test mode")
+	fmt.Println("'forum deploy' # run server on production mode")
 }
 func main() {
-	if len(os.Args) != 2 {
+	if len(os.Args) != 2 && len(os.Args) != 1 {
 		fmt.Println("Invalid command usage\n")
 		showUsage()
 		os.Exit(1)
 	}
-	arg := os.Args[1]
+	arg := "start"
+	if len(os.Args) == 2 {
+		arg = os.Args[1]
+	}
 	viper.SetConfigName("config")
 	viper.AddConfigPath("./config")
 	err := viper.ReadInConfig()
