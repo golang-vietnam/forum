@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
+	"github.com/golang-vietnam/forum/controllers"
 	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/helpers"
 	"github.com/golang-vietnam/forum/middleware"
-	"github.com/golang-vietnam/forum/routes"
 	"github.com/spf13/viper"
 	"runtime"
 )
@@ -48,35 +48,35 @@ func Server() {
 
 func setupApiV1(app *gin.Engine) {
 	//Home
-	homeRouter := routes.Home{}
+	homeController := controllers.Home{}
 	v1Group := app.Group("/v1")
 	{
-		v1Group.GET("/", homeRouter.Index)
+		v1Group.GET("/", homeController.Index)
 	}
 
 	//User
-	userRouter := &routes.User{}
-	list := []gin.HandlerFunc{userRouter.Create}
+	userController := controllers.NewUserController()
+	list := []gin.HandlerFunc{userController.Create}
 	userGroup := v1Group.Group("/user")
 	{
-		userGroup.GET("/", userRouter.Detail)
+		userGroup.GET("/", userController.Detail)
 		userGroup.POST("/", list...)
 	}
 
 	//Post
-	postRouter := &routes.Post{}
+	postController := controllers.NewPostController()
 	postGroup := v1Group.Group("/post")
 	{
-		postGroup.GET("/", postRouter.Index)
-		postGroup.POST("/", postRouter.Create)
-		postGroup.GET("/:id", postRouter.GetById)
+		postGroup.GET("/", postController.Index)
+		postGroup.POST("/", postController.Create)
+		postGroup.GET("/:id", postController.GetById)
 	}
 
 	//Auth
-	authRouter := &routes.Auth{}
+	authController := controllers.NewAuthController()
 	authGroup := v1Group.Group("/auth")
 	{
-		authGroup.GET("/", authRouter.Provider)
-		authGroup.GET("/callback", authRouter.CallBack)
+		authGroup.GET("/", authController.Provider)
+		authGroup.GET("/callback", authController.CallBack)
 	}
 }

@@ -1,24 +1,33 @@
-package routes
+package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-vietnam/forum/models"
 	"gopkg.in/mgo.v2/bson"
-
-	m "github.com/golang-vietnam/forum/models"
 )
 
-type Post struct {
+type PostControllerInterface interface {
+	Index(c *gin.Context)
+	Create(c *gin.Context)
+	GetById(c *gin.Context)
 }
 
-func (p *Post) Index(c *gin.Context) {
+func NewPostController() PostControllerInterface {
+	return &postController{}
+}
+
+type postController struct {
+}
+
+func (p *postController) Index(c *gin.Context) {
 	c.String(200, "Post will be here")
 }
 
 /*
    [WIP] Not complete yet, just some demo for test purpose
 */
-func (p *Post) Create(c *gin.Context) {
-	var post m.Post
+func (p *postController) Create(c *gin.Context) {
+	var post models.Post
 	if err := c.Bind(&post); err != nil {
 		c.AbortWithError(400, err)
 	}
@@ -29,8 +38,8 @@ func (p *Post) Create(c *gin.Context) {
 	c.JSON(201, post)
 }
 
-func (p *Post) GetById(c *gin.Context) {
-	var post m.Post
+func (p *postController) GetById(c *gin.Context) {
+	var post models.Post
 	var err error
 	id := c.Params.ByName("id")
 

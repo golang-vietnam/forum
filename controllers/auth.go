@@ -1,4 +1,4 @@
-package routes
+package controllers
 
 import (
 	"fmt"
@@ -6,12 +6,16 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-type AuthInterface interface {
+type AuthControllerInterface interface {
 	CallBack(c *gin.Context)
 	Provider(c *gin.Context)
 }
 
-type Auth struct{}
+func NewAuthController() AuthControllerInterface {
+	return &authController{}
+}
+
+type authController struct{}
 
 /**
 
@@ -23,7 +27,7 @@ type Auth struct{}
 
 **/
 
-func (a *Auth) CallBack(c *gin.Context) {
+func (a *authController) CallBack(c *gin.Context) {
 	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
 	if err != nil {
 		fmt.Fprintln(c.Writer, err)
@@ -40,6 +44,6 @@ func (a *Auth) CallBack(c *gin.Context) {
 
 **/
 
-func (a *Auth) Provider(c *gin.Context) {
+func (a *authController) Provider(c *gin.Context) {
 	gothic.BeginAuthHandler(c.Writer, c.Request)
 }

@@ -38,7 +38,7 @@ var (
 	}
 	USER_ROLE_MAX = Error{
 		Id:      "USER_ROLE_MAX",
-		Message: "Role max is 2 as editor",
+		Message: "Role max is 1 as editor",
 		Status:  400,
 	}
 

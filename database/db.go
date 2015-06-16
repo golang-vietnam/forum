@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/golang-vietnam/forum/config"
+	"github.com/golang-vietnam/forum/models"
 	"gopkg.in/mgo.v2"
 	"time"
 )
@@ -31,8 +32,7 @@ func InitDb() (*mgo.Session, error) {
 }
 
 func Index() error {
-	// Collection("user").E
-	return Collection("user").EnsureIndex(mgo.Index{
+	return Collection(models.UserColName).EnsureIndex(mgo.Index{
 		Key:    []string{"email"},
 		Unique: true,
 	})
@@ -49,7 +49,7 @@ func CloseDb() {
 }
 
 func ClearAllUser() {
-	if _, err := Collection("user").RemoveAll(nil); err != nil {
+	if _, err := Collection(models.UserColName).RemoveAll(nil); err != nil {
 		panic(err)
 	}
 }

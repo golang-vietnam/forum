@@ -10,11 +10,12 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-const userColName = "users"
+const userColName = models.UserColName
 
 type ResourceUserInterface interface {
-	ListAll() []models.User
-	GetById(id bson.ObjectId) models.User
+	ListAll() []*models.User
+	GetById(id bson.ObjectId) *models.User
+	GetByEmail(email string) *models.User
 	Create(u *models.User) error
 	RemoveById(id bson.ObjectId)
 	Validate(u *models.User) []error
@@ -30,20 +31,27 @@ func NewResourceUser() ResourceUserInterface {
 type resourceUser struct {
 }
 
-func (r *resourceUser) ListAll() []models.User {
-	var users []models.User
+func (r *resourceUser) ListAll() []*models.User {
+	var users []*models.User
 	if err := collection(userColName).Find(nil).All(&users); err != nil {
 		panic(err)
 	}
 	return users
 }
 
-func (r *resourceUser) GetById(id bson.ObjectId) models.User {
+func (r *resourceUser) GetById(id bson.ObjectId) *models.User {
 	var user models.User
 	if err := collection(userColName).FindId(id).One(&user); err != nil {
 		panic(err)
 	}
-	return user
+	return &user
+}
+func (r *resourceUser) GetByEmail(email string) *models.User {
+	var user models.User
+	if err := collection(userColName).Find(bson.D{{email, email}}).One(&user); err != nil {
+		panic(err)
+	}
+	return &user
 }
 
 /**

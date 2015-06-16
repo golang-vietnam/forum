@@ -25,7 +25,7 @@ func NewResourcePost() ResourcePostInterface {
 type resourcePost struct {
 }
 
-const postColName = "posts"
+const postColName = models.PostColName
 
 func (r *resourcePost) ListAll() []models.Post {
 	var posts []models.Post

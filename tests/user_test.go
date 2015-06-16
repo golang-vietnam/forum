@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	userColName = "user"
+	userColName = models.UserColName
 )
 
 func TestUser(t *testing.T) {
@@ -30,7 +30,7 @@ func TestUser(t *testing.T) {
 
 		Convey("Create not exist user should response status 201 and correct user data.", func() {
 
-			user := &models.User{Email: "ntnguyen@ubisen.com", Name: "Nguyen The Nguyen", Password: "golang", Role: 2}
+			user := &models.User{Email: "ntnguyen@ubisen.com", Name: "Nguyen The Nguyen", Password: "golang", Role: 1}
 			response := do_request("POST", url, user)
 			body := parse_response(response)
 			var responseUser models.User

@@ -2,4 +2,4 @@ This file contains a list of people who have made large contributions
 to the private version of Golang VN forum.
 
 Original Forum design and implementation:
-    Nguyen The Nguyen <thenguyen27192@gmail.com>
+    Nguyen The Nguyen <ntnguyen@ubisen.com>

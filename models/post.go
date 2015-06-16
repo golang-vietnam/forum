@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+const (
+	PostColName = "posts"
+)
+
 type Post struct {
 	Id       bson.ObjectId `bson:"_id,omitempty" json:"_id"`
 	Category Category      `bson:"category" json:"category"`

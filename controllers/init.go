@@ -1,4 +1,4 @@
-package routes
+package controllers
 
 import (
 	r "github.com/golang-vietnam/forum/resources"
