@@ -28,7 +28,7 @@ func Server() {
 	)
 	fmt.Println(urlAuth)
 	app := gin.New()
-	if viper.Get("env") != "production" {
+	if viper.Get(config.ENV) != config.ENV_PRODUCTION {
 		app.Use(gin.Logger())
 		app.Use(gin.Recovery())
 	} else {

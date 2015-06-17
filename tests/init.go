@@ -3,7 +3,7 @@ package tests
 import (
 	"encoding/json"
 	"github.com/golang-vietnam/forum/config"
-	"github.com/spf13/viper"
+	"github.com/golang-vietnam/forum/database"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -14,15 +14,19 @@ type Error struct {
 	Id      string `json:id`
 }
 
-func getServer() string {
-	viper.Set("env", "testing")
-	viper.SetConfigName("config")
-	viper.AddConfigPath("../config")
-	if err := viper.ReadInConfig(); err != nil {
-		panic(err)
-	}
-	return "http://" + config.GetServer("host") + ":" + config.GetServer("port")
+var (
+	server  string
+	userApi string
+	authApi string
+)
+
+func init() {
+	server = config.SetEnv(config.ENV_TESTING)
+	userApi = server + "/v1/user/"
+	authApi = server + "/v1/auth/"
+	database.InitDb()
 }
+
 func do_request(method string, urlStr string, model interface{}) *http.Response {
 	if method != "GET" && method != "POST" && method != "PUT" && method != "DELETE" {
 		panic("Method invalid")

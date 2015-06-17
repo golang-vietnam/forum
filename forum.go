@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/golang-vietnam/forum/cmd"
+	"github.com/golang-vietnam/forum/config"
 	"github.com/spf13/viper"
 	"os"
 )
@@ -34,11 +35,14 @@ func main() {
 	}
 	switch arg {
 	case "start":
-		viper.Set("env", "development")
+		// config.SetEnv(config.ENV_DEVELOPMENT)
+		viper.Set(config.ENV, config.ENV_DEVELOPMENT)
 	case "deploy":
-		viper.Set("env", "production")
+		// config.SetEnv(config.ENV_PRODUCTION)
+		viper.Set(config.ENV, config.ENV_PRODUCTION)
 	case "test":
-		viper.Set("env", "testing")
+		// config.SetEnv(config.ENV_TESTING)
+		viper.Set(config.ENV, config.ENV_TESTING)
 	default:
 		fmt.Println("Invalid command:", arg)
 		showUsage()
