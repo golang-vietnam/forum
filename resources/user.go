@@ -71,7 +71,7 @@ func (r *resourceUser) Create(u *models.User) error {
 		return &apiErrors.USER_PASSWORD_REQUIRED
 	}
 	u.Password = r.HashPassword(u.Password)
-	u.Id = bson.NewObjectId()
+	// u.Id_ = bson.NewObjectId()
 	u.Role = models.NormalUser
 	if err := collection(userColName).Insert(u); err != nil {
 		if mgo.IsDup(err) {
@@ -79,6 +79,7 @@ func (r *resourceUser) Create(u *models.User) error {
 		}
 		panic(err)
 	}
+
 	return nil
 }
 

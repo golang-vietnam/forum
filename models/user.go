@@ -12,7 +12,8 @@ const (
 )
 
 type User struct {
-	Id           bson.ObjectId `bson:"_id,omitempty" json:"_id"`
+	Id           int           `json:"id" bson:"id"`
+	Id_          bson.ObjectId `json:"_id" bson:"_id,omitempty"`
 	Name         string        `bson:"name" json:"name"`
 	Email        string        `bson:"email" json:"email" binding:"required,max=50,min=3,email"`
 	Password     string        `bson:"password" json:"password" binding:"required"`

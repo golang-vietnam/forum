@@ -33,7 +33,7 @@ func InitDb() (*mgo.Session, error) {
 
 func Index() error {
 	return Collection(models.UserColName).EnsureIndex(mgo.Index{
-		Key:    []string{"email"},
+		Key:    []string{"email", "id"},
 		Unique: true,
 	})
 }
