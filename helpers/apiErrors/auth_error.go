@@ -6,13 +6,13 @@ const (
 )
 
 var (
-	authErrors = []*apiError{
-		&apiError{
+	authErrors = []apiError{
+		apiError{
 			Id:      AuthEmailInvalid,
 			Message: "Email login invalid",
 			Status:  401,
 		},
-		&apiError{
+		apiError{
 			Id:      AuthPasswordInValid,
 			Message: "Password login invalid",
 			Status:  401,

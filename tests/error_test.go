@@ -1,0 +1,38 @@
+package tests
+
+import (
+	"encoding/json"
+	"github.com/golang-vietnam/forum/helpers/apiErrors"
+	. "github.com/smartystreets/goconvey/convey"
+	"net/http"
+	"testing"
+)
+
+type ApiErrors struct {
+	Errors []apiErrors.ApiError `json:"errors"`
+}
+
+func TestErrorApi(t *testing.T) {
+	Convey("Get API Error", t, func() {
+
+		Convey("Get all api error should return list api error and status 200", func() {
+			response := do_request("GET", errorApi, &data{})
+			body := parse_response(response)
+			var responseApiErrors ApiErrors
+			err := json.Unmarshal(body, &responseApiErrors)
+			So(err, ShouldBeNil)
+			So(response.StatusCode, ShouldEqual, http.StatusOK)
+			So(len(responseApiErrors.Errors), ShouldEqual, len(apiErrors.ApiErrors))
+		})
+		Convey("Get an api error should return an api error and status 200", func() {
+			response := do_request("GET", errorApi+apiErrors.ServerError, &data{})
+			body := parse_response(response)
+			var responseApiError apiErrors.ApiError
+			err := json.Unmarshal(body, &responseApiError)
+			So(err, ShouldBeNil)
+			So(response.StatusCode, ShouldEqual, http.StatusOK)
+			So(responseApiError.Id, ShouldEqual, apiErrors.ServerError)
+		})
+
+	})
+}

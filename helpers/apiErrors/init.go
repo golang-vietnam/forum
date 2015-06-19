@@ -25,10 +25,14 @@ func NewError(id string, message string, status int) *apiError {
 	}
 }
 
-var allError []apiError
+// Use for test, parse to ApiError...
+type ApiError apiError
+
+// User for Error API
+var ApiErrors []apiError
 
 func init() {
-	allError = append(privateErrors, userErrors...)
+	ApiErrors = append(privateErrors, userErrors...)
 }
 
 func cloneError(e *apiError) *apiError {
@@ -37,17 +41,17 @@ func cloneError(e *apiError) *apiError {
 }
 
 // Use for Error API
-func GetErrorById(errorId string) *apiError {
-	for index := range allError {
-		if allError[index].Id == errorId {
-			return cloneError(&allError[index])
+func FindErrorById(errorId string) *apiError {
+	for index := range ApiErrors {
+		if ApiErrors[index].Id == errorId {
+			return cloneError(&ApiErrors[index])
 		}
 	}
 	return nil
 }
 
 func ThrowError(errorId string) *apiError {
-	if err := GetErrorById(errorId); err != nil {
+	if err := FindErrorById(errorId); err != nil {
 		return err
 	}
 	panic("Error To Throw Not Defined")

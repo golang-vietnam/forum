@@ -53,7 +53,12 @@ func setupApiV1(app *gin.Engine) {
 	{
 		v1Group.GET("/", homeController.Index)
 	}
-
+	apiErrorController := controllers.NewErrorController()
+	apiErrorGroup := v1Group.Group("/errors")
+	{
+		apiErrorGroup.GET("/", apiErrorController.List)
+		apiErrorGroup.GET("/:errorId", apiErrorController.GetById)
+	}
 	//User
 	userController := controllers.NewUserController()
 	list := []gin.HandlerFunc{userController.Create}

@@ -21,19 +21,25 @@ const (
 )
 
 var (
-	server  string
-	userApi string
-	authApi string
+	server   string
+	userApi  string
+	authApi  string
+	errorApi string
 )
 
 func init() {
 	server = config.SetEnv(config.ENV_TESTING)
 	userApi = server + "/v1/user/"
 	authApi = server + "/v1/auth/"
+	errorApi = server + "/v1/errors/"
 	database.InitDb()
 }
 
+type data struct {
+}
+
 func do_request(method string, urlStr string, model interface{}) *http.Response {
+
 	if method != "GET" && method != "POST" && method != "PUT" && method != "DELETE" {
 		panic("Method invalid")
 	}
@@ -42,10 +48,12 @@ func do_request(method string, urlStr string, model interface{}) *http.Response 
 		jsondata, _ := json.Marshal(model)
 		data = strings.NewReader(string(jsondata))
 	}
+
 	req, err := http.NewRequest(method, urlStr, data)
 	if err != nil {
 		panic(err)
 	}
+
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	res, err := client.Do(req)
