@@ -5,7 +5,7 @@ import (
 	"github.com/golang-vietnam/forum/models"
 )
 
-type ResourceAuthInterface interface {
+type resourceAuthInterface interface {
 	Login(email string, password string) (*models.User, error)
 }
 
@@ -16,7 +16,7 @@ var (
 	newResourceUser = NewResourceUser()
 )
 
-func NewResourceAuth() ResourceAuthInterface {
+func NewResourceAuth() resourceAuthInterface {
 	return &resourceAuth{}
 }
 

@@ -12,7 +12,7 @@ import (
 
 const userColName = models.UserColName
 
-type ResourceUserInterface interface {
+type resourceUserInterface interface {
 	ListAll() []*models.User
 	GetById(id bson.ObjectId) *models.User
 	GetByEmail(email string) *models.User
@@ -24,7 +24,7 @@ type ResourceUserInterface interface {
 	HashPassword(password string) string
 }
 
-func NewResourceUser() ResourceUserInterface {
+func NewResourceUser() resourceUserInterface {
 	return &resourceUser{}
 }
 
@@ -48,7 +48,7 @@ func (r *resourceUser) GetById(id bson.ObjectId) *models.User {
 }
 func (r *resourceUser) GetByEmail(email string) *models.User {
 	var user models.User
-	if err := collection(userColName).Find(bson.D{{email, email}}).One(&user); err != nil {
+	if err := collection(userColName).Find(bson.M{"email": email}).One(&user); err != nil {
 		panic(err)
 	}
 	return &user
@@ -68,14 +68,14 @@ func (r *resourceUser) GetByEmail(email string) *models.User {
 
 func (r *resourceUser) Create(u *models.User) error {
 	if u.Password == "" {
-		return &apiErrors.USER_PASSWORD_REQUIRED
+		return newApiError(apiErrors.USER_PASSWORD_REQUIRED)
 	}
 	u.Password = r.HashPassword(u.Password)
-	// u.Id_ = bson.NewObjectId()
+	u.Id = bson.NewObjectId()
 	u.Role = models.NormalUser
 	if err := collection(userColName).Insert(u); err != nil {
 		if mgo.IsDup(err) {
-			return &apiErrors.USER_EXIST
+			return newApiError(apiErrors.USER_EXIST)
 		}
 		panic(err)
 	}
@@ -111,25 +111,25 @@ func (r *resourceUser) ParseError(err error) []error {
 			case "Email":
 				switch v.Tag {
 				case "required":
-					errors = append(errors, &apiErrors.USER_EMAIL_REQUIRED)
+					errors = append(errors, newApiError(apiErrors.USER_EMAIL_REQUIRED))
 				case "email":
-					errors = append(errors, &apiErrors.USER_EMAIL_INVALID)
+					errors = append(errors, newApiError(apiErrors.USER_EMAIL_INVALID))
 				case "max":
-					errors = append(errors, &apiErrors.USER_EMAIL_MAX)
+					errors = append(errors, newApiError(apiErrors.USER_EMAIL_MAX))
 				case "min":
-					errors = append(errors, &apiErrors.USER_EMAIL_MIN)
+					errors = append(errors, newApiError(apiErrors.USER_EMAIL_MIN))
 				}
 			case "Password":
 				switch v.Tag {
 				case "required":
-					errors = append(errors, &apiErrors.USER_PASSWORD_REQUIRED)
+					errors = append(errors, newApiError(apiErrors.USER_PASSWORD_REQUIRED))
 				}
 			case "Role":
 				switch v.Tag {
 				case "max":
-					errors = append(errors, &apiErrors.USER_ROLE_MAX)
+					errors = append(errors, newApiError(apiErrors.USER_ROLE_MAX))
 				case "min":
-					errors = append(errors, &apiErrors.USER_ROLE_MIN)
+					errors = append(errors, newApiError(apiErrors.USER_ROLE_MIN))
 				}
 			}
 		}

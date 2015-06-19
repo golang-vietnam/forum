@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/database"
+	"github.com/golang-vietnam/forum/models"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -13,6 +14,11 @@ type Error struct {
 	Message string `json:message`
 	Id      string `json:id`
 }
+type userModel models.User
+
+const (
+	USER_COL_NAME = models.UserColName
+)
 
 var (
 	server  string

@@ -48,7 +48,7 @@ func Server() {
 
 func setupApiV1(app *gin.Engine) {
 	//Home
-	homeController := controllers.Home{}
+	homeController := controllers.NewHomeController()
 	v1Group := app.Group("/v1")
 	{
 		v1Group.GET("/", homeController.Index)
@@ -77,6 +77,7 @@ func setupApiV1(app *gin.Engine) {
 	authGroup := v1Group.Group("/auth")
 	{
 		authGroup.GET("/", authController.Provider)
+		authGroup.POST("/login", authController.Login)
 		authGroup.GET("/callback", authController.CallBack)
 	}
 }

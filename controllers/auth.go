@@ -3,19 +3,41 @@ package controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-vietnam/forum/models"
 	"github.com/markbates/goth/gothic"
 )
 
-type AuthControllerInterface interface {
+type authControllerInterface interface {
+	Login(c *gin.Context)
 	CallBack(c *gin.Context)
 	Provider(c *gin.Context)
 }
 
-func NewAuthController() AuthControllerInterface {
+func NewAuthController() authControllerInterface {
 	return &authController{}
 }
 
 type authController struct{}
+
+/**
+
+	TODO:
+	- Get email and password from post request
+	- Find user
+
+**/
+func (a *authController) Login(c *gin.Context) {
+	var userLogin models.UserLogin
+	if err := c.Bind(&userLogin); err != nil {
+		panic(err)
+	}
+	user, err := authResource.Login(userLogin.Email, userLogin.Password)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	c.JSON(200, user)
+}
 
 /**
 

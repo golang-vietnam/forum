@@ -9,7 +9,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type ResourcePostInterface interface {
+type resourcePostInterface interface {
 	ListAll() []models.Post
 	ListPaging(page int, perPage int) []models.Post
 	ListPagingByCategory(id bson.ObjectId, page int, perPage int) []models.Post
@@ -18,7 +18,7 @@ type ResourcePostInterface interface {
 	RemoveById(id bson.ObjectId)
 }
 
-func NewResourcePost() ResourcePostInterface {
+func NewResourcePost() resourcePostInterface {
 	return &resourcePost{}
 }
 

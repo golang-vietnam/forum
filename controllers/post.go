@@ -6,13 +6,13 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type PostControllerInterface interface {
+type postControllerInterface interface {
 	Index(c *gin.Context)
 	Create(c *gin.Context)
 	GetById(c *gin.Context)
 }
 
-func NewPostController() PostControllerInterface {
+func NewPostController() postControllerInterface {
 	return &postController{}
 }
 

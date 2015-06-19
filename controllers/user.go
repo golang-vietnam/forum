@@ -5,12 +5,12 @@ import (
 	"github.com/golang-vietnam/forum/models"
 )
 
-type UserControllerInterface interface {
+type userControllerInterface interface {
 	Detail(c *gin.Context)
 	Create(c *gin.Context)
 }
 
-func NewUserController() UserControllerInterface {
+func NewUserController() userControllerInterface {
 	return &userController{}
 }
 

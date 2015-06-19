@@ -23,7 +23,7 @@ func RequireLogin(secret string) gin.HandlerFunc {
 		})
 
 		if err != nil {
-			c.Error(&apiErrors.USER_NOT_LOGINED)
+			c.Error(apiErrors.CloneError(apiErrors.USER_NOT_LOGINED))
 			return
 		}
 		c.Set("user", user)

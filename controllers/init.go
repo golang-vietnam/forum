@@ -7,4 +7,5 @@ import (
 var (
 	userResource = resources.NewResourceUser()
 	postResource = resources.NewResourcePost()
+	authResource = resources.NewResourceAuth()
 )

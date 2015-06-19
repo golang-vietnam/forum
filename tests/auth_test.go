@@ -21,6 +21,13 @@ func TestAuthen(t *testing.T) {
 			So(response.StatusCode, ShouldEqual, 201)
 
 			Convey("Login with correct account should successful!", func() {
+				response := do_request("POST", authApi+"login", &models.UserLogin{Email: "ntnguyen@ubisen.com", Password: "golang"})
+				body := parse_response(response)
+				var responseUser models.User
+				err := json.Unmarshal(body, &responseUser)
+				So(err, ShouldBeNil)
+				So(response.StatusCode, ShouldEqual, 200)
+				So(responseUser.Email, ShouldEqual, "ntnguyen@ubisen.com")
 			})
 		})
 

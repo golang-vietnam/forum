@@ -42,9 +42,10 @@ func Recovery() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				c.JSON(apiErrors.SERVER_ERROR.Status, gin.H{
-					"message": apiErrors.SERVER_ERROR.Message,
-					"id":      apiErrors.SERVER_ERROR.Id,
+				serverError := apiErrors.CloneError(apiErrors.SERVER_ERROR)
+				c.JSON(serverError.Status, gin.H{
+					"message": serverError.Message,
+					"id":      serverError.Id,
 				})
 				return
 			}
