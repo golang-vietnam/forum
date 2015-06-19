@@ -1,46 +1,61 @@
 package apiErrors
 
-type Error struct {
+type apiError struct {
 	Id      string `json:"id"`
 	Message string `json:"message"`
 	Status  int    `json:"status"`
 }
 
-func (e *Error) Error() string {
+func (e *apiError) Error() string {
 	return e.Message
 }
 
-func (e *Error) WithNewMessage(message string) *Error {
-	return &Error{
+func (e *apiError) WithNewMessage(message string) *apiError {
+	return &apiError{
 		Id:      e.Id,
 		Message: message,
 		Status:  e.Status,
 	}
 }
-func NewError(id string, message string, status int) *Error {
-	return &Error{
+func NewError(id string, message string, status int) *apiError {
+	return &apiError{
 		Id:      id,
 		Message: message,
 		Status:  status,
 	}
 }
 
-var allError []*Error
+var allError []apiError
 
 func init() {
 	allError = append(privateErrors, userErrors...)
 }
 
-func cloneError(e *Error) *Error {
+func cloneError(e *apiError) *apiError {
 	newError := *e
 	return &newError
 }
 
-func ThrowError(errorId string) *Error {
+// Use for Error API
+func GetErrorById(errorId string) *apiError {
 	for index := range allError {
 		if allError[index].Id == errorId {
-			return cloneError(allError[index])
+			return cloneError(&allError[index])
 		}
 	}
-	panic("Error Throw Not Found")
+	return nil
+}
+
+func ThrowError(errorId string) *apiError {
+	if err := GetErrorById(errorId); err != nil {
+		return err
+	}
+	panic("Error To Throw Not Defined")
+}
+
+func ParseError(err error) *apiError {
+	if parseError, ok := err.(*apiError); ok {
+		return parseError
+	}
+	return nil
 }

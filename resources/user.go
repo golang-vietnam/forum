@@ -68,14 +68,14 @@ func (r *resourceUser) GetByEmail(email string) *models.User {
 
 func (r *resourceUser) Create(u *models.User) error {
 	if u.Password == "" {
-		return newApiError(apiErrors.UserPasswordRequired)
+		return apiErrors.ThrowError(apiErrors.UserPasswordRequired)
 	}
 	u.Password = r.HashPassword(u.Password)
 	u.Id = bson.NewObjectId()
 	u.Role = models.NormalUser
 	if err := collection(userColName).Insert(u); err != nil {
 		if mgo.IsDup(err) {
-			return newApiError(apiErrors.UserExist)
+			return apiErrors.ThrowError(apiErrors.UserExist)
 		}
 		panic(err)
 	}
@@ -111,25 +111,25 @@ func (r *resourceUser) ParseError(err error) []error {
 			case "Email":
 				switch v.Tag {
 				case "required":
-					errors = append(errors, newApiError(apiErrors.UserEmailRequied))
+					errors = append(errors, apiErrors.ThrowError(apiErrors.UserEmailRequied))
 				case "email":
-					errors = append(errors, newApiError(apiErrors.UserEmailInvalid))
+					errors = append(errors, apiErrors.ThrowError(apiErrors.UserEmailInvalid))
 				case "max":
-					errors = append(errors, newApiError(apiErrors.UserEmailMax))
+					errors = append(errors, apiErrors.ThrowError(apiErrors.UserEmailMax))
 				case "min":
-					errors = append(errors, newApiError(apiErrors.UserEmailMin))
+					errors = append(errors, apiErrors.ThrowError(apiErrors.UserEmailMin))
 				}
 			case "Password":
 				switch v.Tag {
 				case "required":
-					errors = append(errors, newApiError(apiErrors.UserPasswordRequired))
+					errors = append(errors, apiErrors.ThrowError(apiErrors.UserPasswordRequired))
 				}
 			case "Role":
 				switch v.Tag {
 				case "max":
-					errors = append(errors, newApiError(apiErrors.UserRoleMax))
+					errors = append(errors, apiErrors.ThrowError(apiErrors.UserRoleMax))
 				case "min":
-					errors = append(errors, newApiError(apiErrors.UserRoleMin))
+					errors = append(errors, apiErrors.ThrowError(apiErrors.UserRoleMin))
 				}
 			}
 		}

@@ -13,48 +13,48 @@ const (
 )
 
 var (
-	userErrors = []*Error{
-		&Error{
+	userErrors = []apiError{
+		apiError{
 			Id:      UserExist,
 			Message: "This user has been exist!",
 			Status:  400,
 		},
-		&Error{
+		apiError{
 			Id:      UserEmailRequied,
 			Message: "Email is required",
 			Status:  400,
 		},
-		&Error{
+		apiError{
 			Id:      UserEmailInvalid,
 			Message: "Email invalid",
 			Status:  400,
 		},
-		&Error{
+		apiError{
 			Id:      UserEmailMin,
 			Message: "Email min length is 3",
 			Status:  400,
 		},
-		&Error{
+		apiError{
 			Id:      UserEmailMax,
 			Message: "Email max length is 50",
 			Status:  400,
 		},
-		&Error{
+		apiError{
 			Id:      UserNotLogined,
 			Message: "You must login to do this",
 			Status:  401,
 		},
-		&Error{
+		apiError{
 			Id:      UserRoleMin,
 			Message: "Role min is 0 as public user",
 			Status:  400,
 		},
-		&Error{
+		apiError{
 			Id:      UserRoleMax,
 			Message: "Role max is 1 as editor",
 			Status:  400,
 		},
-		&Error{
+		apiError{
 			Id:      UserPasswordRequired,
 			Message: "Password is required",
 			Status:  400,

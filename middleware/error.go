@@ -17,7 +17,14 @@ func ErrorHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
 		if err := c.Errors.Last(); err != nil {
-			if parseError, ok := err.Err.(*apiErrors.Error); ok {
+			// if parseError, ok := err.Err.(*apiErrors.Error); ok {
+			// 	c.JSON(parseError.Status, gin.H{
+			// 		"message": parseError.Message,
+			// 		"id":      parseError.Id,
+			// 	})
+			// 	return
+			// }
+			if parseError := apiErrors.ParseError(err.Err); parseError != nil {
 				c.JSON(parseError.Status, gin.H{
 					"message": parseError.Message,
 					"id":      parseError.Id,
