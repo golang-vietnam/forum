@@ -34,7 +34,7 @@ func ErrorHandler() gin.HandlerFunc {
 	TODO:
 	- Only run on production mode
 	- Log to file
-	- Send SERVER_ERROR
+	- Send ServerError
 
 **/
 
@@ -42,7 +42,7 @@ func Recovery() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				serverError := apiErrors.CloneError(apiErrors.SERVER_ERROR)
+				serverError := apiErrors.ThrowError(apiErrors.ServerError)
 				c.JSON(serverError.Status, gin.H{
 					"message": serverError.Message,
 					"id":      serverError.Id,

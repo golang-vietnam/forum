@@ -1,14 +1,21 @@
 package apiErrors
 
+const (
+	AuthEmailInvalid    = "AUTH_EMAIL_INVALID"
+	AuthPasswordInValid = "AUTH_PASSWORD_INVALID"
+)
+
 var (
-	AUTH_EMAIL_INVALID = Error{
-		Id:      "AUTH_EMAIL_INVALID",
-		Message: "Email login invalid",
-		Status:  401,
-	}
-	AUTH_PASSWORD_INVALID = Error{
-		Id:      "AUTH_PASSWORD_INVALID",
-		Message: "Password login invalid",
-		Status:  401,
+	authErrors = []*Error{
+		&Error{
+			Id:      AuthEmailInvalid,
+			Message: "Email login invalid",
+			Status:  401,
+		},
+		&Error{
+			Id:      AuthPasswordInValid,
+			Message: "Password login invalid",
+			Status:  401,
+		},
 	}
 )

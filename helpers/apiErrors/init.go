@@ -24,20 +24,23 @@ func NewError(id string, message string, status int) *Error {
 		Status:  status,
 	}
 }
-func CloneError(e *Error) *Error {
+
+var allError []*Error
+
+func init() {
+	allError = append(privateErrors, userErrors...)
+}
+
+func cloneError(e *Error) *Error {
 	newError := *e
 	return &newError
 }
 
-var (
-	SERVER_ERROR = &Error{
-		Id:      "SERVER_ERROR",
-		Message: "The server encountered an unexpected condition that prevented it from fulfilling the request.",
-		Status:  500,
+func ThrowError(errorId string) *Error {
+	for index := range allError {
+		if allError[index].Id == errorId {
+			return cloneError(allError[index])
+		}
 	}
-	SERVER_TEMPORARILY_UNAVAILBLE = &Error{
-		Id:      "SERVER_TEMPORARILY_UNAVAILBLE",
-		Message: "The server is temporarily unavailable.",
-		Status:  500,
-	}
-)
+	panic("Error Throw Not Found")
+}

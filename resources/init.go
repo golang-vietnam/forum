@@ -10,6 +10,6 @@ func collection(c string) *mgo.Collection {
 	return database.Collection(c)
 }
 
-func newApiError(apiError *apiErrors.Error) *apiErrors.Error {
-	return apiErrors.CloneError(apiError)
+func newApiError(apiErrorId string) *apiErrors.Error {
+	return apiErrors.ThrowError(apiErrorId)
 }

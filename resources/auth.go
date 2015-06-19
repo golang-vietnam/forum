@@ -23,10 +23,10 @@ func NewResourceAuth() resourceAuthInterface {
 func (r *resourceAuth) Login(email string, password string) (*models.User, error) {
 	user := newResourceUser.GetByEmail(email)
 	if user == nil {
-		return nil, &apiErrors.AUTH_EMAIL_INVALID
+		return nil, apiErrors.ThrowError(apiErrors.AuthEmailInvalid)
 	}
 	if !newResourceUser.IsMatchPassword(user.Password, password) {
-		return nil, &apiErrors.AUTH_PASSWORD_INVALID
+		return nil, apiErrors.ThrowError(apiErrors.AuthPasswordInValid)
 	}
 	return user, nil
 }

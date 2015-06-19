@@ -58,7 +58,7 @@ func TestUser(t *testing.T) {
 			So(responseUser.Email, ShouldEqual, user.Email)
 			So(responseUser.Name, ShouldEqual, user.Name)
 			So(responseUser.Role, ShouldEqual, 0)
-			user.Email = "xxx@xxxx"
+
 			var userInDb userModel
 			database.Collection(USER_COL_NAME).FindId(responseUser.Id).One(&userInDb)
 			So(userInDb.Id, ShouldEqual, responseUser.Id)
@@ -76,7 +76,6 @@ func TestUser(t *testing.T) {
 		})
 
 		Convey("Create with invalid email should return status 400 and email invalid message", func() {
-			Println(userValidData.Email)
 			response := do_request("POST", userApi, userInvalidEmailData)
 			body := parse_response(response)
 			var responseData Error
