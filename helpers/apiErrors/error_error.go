@@ -10,11 +10,12 @@ var (
 		apiError{
 			Id:      ApiErrorNotFound,
 			Message: "API error not found",
-			Status:  401,
+			Status:  404,
 		},
 		apiError{
 			Id:      ApiErrorIdRequied,
 			Message: "API error Id required ",
+			Status:  400,
 		},
 	}
 )

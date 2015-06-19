@@ -28,11 +28,12 @@ func NewError(id string, message string, status int) *apiError {
 // Use for test, parse to ApiError...
 type ApiError apiError
 
-// User for Error API
+// Use for Error API
 var ApiErrors []apiError
 
 func init() {
 	ApiErrors = append(privateErrors, userErrors...)
+	ApiErrors = append(ApiErrors, apiErrorErrors...)
 }
 
 func cloneError(e *apiError) *apiError {
