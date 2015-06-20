@@ -5,8 +5,6 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"net/url"
-	// "os"
-	// "path/filepath"
 )
 
 const (
@@ -14,6 +12,8 @@ const (
 	ENV_TESTING     = "testing"
 	ENV_DEVELOPMENT = "development"
 	ENV_PRODUCTION  = "production"
+	CONFIG_NAME     = "config"
+	CONFIG_PATH     = "config"
 )
 
 func mapDb(confEnv map[string]interface{}) map[string]interface{} {
@@ -22,9 +22,12 @@ func mapDb(confEnv map[string]interface{}) map[string]interface{} {
 	return databaseMap
 }
 func SetEnv(env string) string {
-
-	viper.SetConfigName("config")
-	viper.AddConfigPath("../config")
+	configPath := CONFIG_PATH
+	if env == ENV_TESTING {
+		configPath = "../config"
+	}
+	viper.SetConfigName(CONFIG_NAME)
+	viper.AddConfigPath(configPath)
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}
@@ -34,6 +37,10 @@ func SetEnv(env string) string {
 		panic("Url config invalid")
 	}
 	return u.String()
+}
+
+func GetEnv() interface{} {
+	return viper.Get(ENV)
 }
 
 func GetDB(key string) string {
