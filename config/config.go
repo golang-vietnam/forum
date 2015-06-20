@@ -23,11 +23,9 @@ func mapDb(confEnv map[string]interface{}) map[string]interface{} {
 }
 func SetEnv(env string) string {
 	configPath := CONFIG_PATH
-	if env == ENV_TESTING {
-		configPath = "../config"
-	}
 	viper.SetConfigName(CONFIG_NAME)
 	viper.AddConfigPath(configPath)
+	viper.AddConfigPath("../config")
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}

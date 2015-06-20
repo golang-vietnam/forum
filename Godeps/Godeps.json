@@ -12,19 +12,6 @@
 			"Rev": "dcfedd50ed5334f96adee43fc88518a4f095e15c"
 		},
 		{
-			"ImportPath": "github.com/codegangsta/cli",
-			"Comment": "1.2.0-122-g8cbee4b",
-			"Rev": "8cbee4b7192cea690c9f048e742e6b4c3525fd9e"
-		},
-		{
-			"ImportPath": "github.com/codegangsta/envy/lib",
-			"Rev": "4b78388c8ce4fa412440ca4eaa654e2fdd752e49"
-		},
-		{
-			"ImportPath": "github.com/codegangsta/gin",
-			"Rev": "20c9707f2046c2a1019cea9659931731cf15a7dd"
-		},
-		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdhttp/httptypes",
 			"Comment": "v2.0.4-403-gf480a8b",
 			"Rev": "f480a8b051591a6b053bd9ad643fed5787b3acb0"
@@ -45,26 +32,9 @@
 			"Rev": "5ca80149b9d3f8b863af0e2bb6742e608603bd99"
 		},
 		{
-			"ImportPath": "github.com/flosch/pongo2",
-			"Comment": "v1.0-rc1-159-gc3e5e0e",
-			"Rev": "c3e5e0ef65b3da0bd32ef8fc4b920ecd9c6a8c6d"
-		},
-		{
 			"ImportPath": "github.com/gin-gonic/gin",
 			"Comment": "v1.0rc1-7-g35fd7fb",
 			"Rev": "35fd7fb48050057729ec7336d84b6ed1a7dd7fd7"
-		},
-		{
-			"ImportPath": "github.com/gorilla/context",
-			"Rev": "215affda49addc4c8ef7e2534915df2c8c35c6cd"
-		},
-		{
-			"ImportPath": "github.com/gorilla/securecookie",
-			"Rev": "8e98dd730fc43f1383f19615db6f2e702c9738e8"
-		},
-		{
-			"ImportPath": "github.com/gorilla/sessions",
-			"Rev": "f61c3ec2cf65d69e7efedfd4d060fe128882c951"
 		},
 		{
 			"ImportPath": "github.com/kr/pretty",
@@ -78,10 +48,6 @@
 		{
 			"ImportPath": "github.com/manucorporat/sse",
 			"Rev": "b7eeebd8987e6b233e43db2551d43f71b2e115d5"
-		},
-		{
-			"ImportPath": "github.com/markbates/goth",
-			"Rev": "3440a6041e326abf9a899302b72d48a80dd051a2"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
@@ -141,10 +107,6 @@
 		{
 			"ImportPath": "golang.org/x/net/context",
 			"Rev": "621fff363a1d9ad7fdd0bfa9d80a42881267deb4"
-		},
-		{
-			"ImportPath": "golang.org/x/oauth2",
-			"Rev": "b5adcc2dcdf009d0391547edc6ecbaff889f5bb9"
 		},
 		{
 			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
