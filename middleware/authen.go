@@ -6,6 +6,17 @@ import (
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 )
 
+type authMiddlewareInterface interface {
+	RequireLogin(secret string) gin.HandlerFunc
+	RequirePermission(role int) gin.HandlerFunc
+}
+type authMiddleware struct {
+}
+
+func NewAuthMiddleware() authMiddlewareInterface {
+	return &authMiddleware{}
+}
+
 /**
 
 	TODO:
@@ -14,8 +25,7 @@ import (
 	- If logined set "user" in context
 
 **/
-
-func RequireLogin(secret string) gin.HandlerFunc {
+func (a *authMiddleware) RequireLogin(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user, err := jwt_lib.ParseFromRequest(c.Request, func(token *jwt_lib.Token) (interface{}, error) {
 			b := ([]byte(secret))
@@ -38,8 +48,7 @@ func RequireLogin(secret string) gin.HandlerFunc {
 	- If user has role >= role param -> pass
 
 **/
-
-func RequirePermission(role int) gin.HandlerFunc {
+func (a *authMiddleware) RequirePermission(role int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 	}

@@ -25,14 +25,14 @@ func main() {
 	if len(os.Args) == 2 {
 		arg = os.Args[1]
 	}
-
+	config.Loads("config/config.yml")
 	switch arg {
 	case "start":
-		config.SetEnv(config.ENV_DEVELOPMENT)
+		config.SetEnv(config.EnvDevelopment)
 	case "deploy":
-		config.SetEnv(config.ENV_PRODUCTION)
+		config.SetEnv(config.EnvProduction)
 	case "test":
-		config.SetEnv(config.ENV_TESTING)
+		config.SetEnv(config.EnvTesting)
 	default:
 		fmt.Println("Invalid command:", arg)
 		showUsage()

@@ -1,90 +1,104 @@
 package config
 
 import (
-	"fmt"
-	"github.com/spf13/viper"
-	"log"
-	"net/url"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 const (
-	ENV             = "env"
-	ENV_TESTING     = "testing"
-	ENV_DEVELOPMENT = "development"
-	ENV_PRODUCTION  = "production"
-	CONFIG_NAME     = "config"
-	CONFIG_PATH     = "config"
+	EnvTesting     = "testing"
+	EnvDevelopment = "development"
+	EnvProduction  = "production"
+	SecretKey      = "secret"
 )
 
-func mapDb(confEnv map[string]interface{}) map[string]interface{} {
-	database := confEnv["database"]
-	databaseMap, _ := database.(map[string]interface{})
-	return databaseMap
+type database struct {
+	Name     string
+	Host     string
+	Port     int
+	User     string
+	Password string
 }
-func SetEnv(env string) string {
-	configPath := CONFIG_PATH
-	viper.SetConfigName(CONFIG_NAME)
-	viper.AddConfigPath(configPath)
-	viper.AddConfigPath("../config")
-	if err := viper.ReadInConfig(); err != nil {
+type server struct {
+	Host string
+	Port int
+}
+type envValue struct {
+	Database database
+	Server   server
+}
+type env struct {
+	Testing     envValue
+	Development envValue
+	Production  envValue
+}
+type config struct {
+	Env    env
+	Secret string
+}
+
+type Config config
+type Server server
+type Env env
+type EnvValue envValue
+type Database database
+
+var configValue *config
+
+func Loads(filePath string) *config {
+	var fileName string
+	var yamlFile []byte
+	var err error
+
+	if fileName, err = filepath.Abs(filePath); err != nil {
 		panic(err)
 	}
-	viper.Set(ENV, env)
-	u, err := url.Parse(fmt.Sprintf("http://%s:%s", GetServer("host"), GetServer("port")))
-	if err != nil {
-		panic("Url config invalid")
+
+	if yamlFile, err = ioutil.ReadFile(fileName); err != nil {
+		panic(err)
 	}
-	return u.String()
+	configValue = &config{}
+	if err = yaml.Unmarshal(yamlFile, configValue); err != nil {
+		panic(err)
+	}
+	return configValue
 }
 
-func GetEnv() interface{} {
-	return viper.Get(ENV)
+func SetEnv(env string) {
+	if env != EnvDevelopment && env != EnvProduction && env != EnvTesting {
+		panic("Invalid env")
+	}
+	os.Setenv("env", env)
 }
 
-func GetDB(key string) string {
-	env := viper.Get(ENV)
-	confEnv := viper.GetStringMap(ENV_DEVELOPMENT)
+func GetEnv() string {
+	env := os.Getenv("env")
+	if env == "" {
+		panic("Environment not set")
+	}
+	return env
+}
+func GetEnvValue() *envValue {
+	if configValue == nil {
+		panic("Must run Loads first")
+	}
+	env := GetEnv()
 	switch env {
-	case ENV_DEVELOPMENT:
-		value, _ := mapDb(confEnv)[key].(string)
-		return value
-	case ENV_PRODUCTION:
-		confEnv := viper.GetStringMap(ENV_PRODUCTION)
-		value, _ := mapDb(confEnv)[key].(string)
-		return value
-	case ENV_TESTING:
-		confEnv := viper.GetStringMap(ENV_TESTING)
-		value, _ := mapDb(confEnv)[key].(string)
-		return value
+	case EnvDevelopment:
+		return &configValue.Env.Development
+	case EnvProduction:
+		return &configValue.Env.Production
+	case EnvTesting:
+		return &configValue.Env.Testing
 	default:
-		log.Panic("Ohshit! Not config environment")
+		return nil
 	}
-	return ""
 }
-
-func mapServer(confEnv map[string]interface{}) map[string]interface{} {
-	server := confEnv["server"]
-	serverMap, _ := server.(map[string]interface{})
-	return serverMap
-}
-
-func GetServer(key string) string {
-	env := viper.Get(ENV)
-	confEnv := viper.GetStringMap(ENV_DEVELOPMENT)
-	switch env {
-	case ENV_DEVELOPMENT:
-		value, _ := mapServer(confEnv)[key].(string)
-		return value
-	case ENV_PRODUCTION:
-		confEnv := viper.GetStringMap(ENV_PRODUCTION)
-		value, _ := mapServer(confEnv)[key].(string)
-		return value
-	case ENV_TESTING:
-		confEnv := viper.GetStringMap(ENV_TESTING)
-		value, _ := mapServer(confEnv)[key].(string)
-		return value
-	default:
-		log.Panic("Ohshit! Not config environment")
+func GetSecret() string {
+	if configValue == nil {
+		panic("Must run Loads first")
 	}
-	return ""
+	return configValue.Secret
 }

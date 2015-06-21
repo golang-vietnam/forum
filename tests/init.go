@@ -2,11 +2,13 @@ package tests
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/models"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -17,7 +19,7 @@ type Error struct {
 type userModel models.User
 
 const (
-	USER_COL_NAME = models.UserColName
+	UserColName = models.UserColName
 )
 
 var (
@@ -27,8 +29,18 @@ var (
 	errorApi string
 )
 
+func getConnectString(host string, port int) string {
+	u, err := url.Parse(fmt.Sprintf("http://%s:%d", host, port))
+	if err != nil {
+		panic("Url config invalid")
+	}
+	return u.String()
+}
 func init() {
-	server = config.SetEnv(config.ENV_TESTING)
+	config.Loads("../config/config.yml")
+	config.SetEnv(config.EnvTesting)
+	env := config.GetEnvValue()
+	server = getConnectString(env.Server.Host, env.Server.Port)
 	userApi = server + "/v1/user/"
 	authApi = server + "/v1/auth/"
 	errorApi = server + "/v1/errors/"

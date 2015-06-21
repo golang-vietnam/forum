@@ -48,7 +48,6 @@ func TestUser(t *testing.T) {
 
 		Convey("Create not exist user should response status 201 and correct user data.", func() {
 			user := CloneUserModel(userValidData)
-			// user := &user1
 			response := do_request("POST", userApi, user)
 			body := parse_response(response)
 			var responseUser userModel
@@ -60,7 +59,7 @@ func TestUser(t *testing.T) {
 			So(responseUser.Role, ShouldEqual, 0)
 
 			var userInDb userModel
-			database.Collection(USER_COL_NAME).FindId(responseUser.Id).One(&userInDb)
+			database.Collection(UserColName).FindId(responseUser.Id).One(&userInDb)
 			So(userInDb.Id, ShouldEqual, responseUser.Id)
 
 			Convey("Create exist user should response status 400 and exist message", func() {

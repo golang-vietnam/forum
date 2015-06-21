@@ -13,12 +13,14 @@ var (
 )
 
 func InitDb() (*mgo.Session, error) {
+	env := config.GetEnvValue()
+
 	mongoDBDialInfo := &mgo.DialInfo{
-		Addrs:    []string{config.GetDB("host")},
+		Addrs:    []string{env.Database.Host},
 		Timeout:  60 * time.Second,
-		Database: config.GetDB("name"),
-		Username: config.GetDB("user"),
-		Password: config.GetDB("password"),
+		Database: env.Database.Name,
+		Username: env.Database.User,
+		Password: env.Database.Password,
 	}
 	if mongoSession != nil {
 		panic("mongodb is connected!")
@@ -27,7 +29,7 @@ func InitDb() (*mgo.Session, error) {
 	if mongoSession, err = mgo.DialWithInfo(mongoDBDialInfo); err != nil {
 		return mongoSession, err
 	}
-	dataBase = config.GetDB("name")
+	dataBase = env.Database.Name
 	return mongoSession, Index()
 }
 

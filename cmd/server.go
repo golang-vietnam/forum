@@ -7,16 +7,21 @@ import (
 	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/middleware"
 	"runtime"
+	"strconv"
 )
 
 func Server() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
 	if _, err := database.InitDb(); err != nil {
 		panic(err)
 	}
+
 	app := gin.New()
-	if config.GetEnv() != config.ENV_PRODUCTION {
+	app.Use(func(c *gin.Context) {
+		c.Set(config.SecretKey, config.GetSecret())
+		c.Next()
+	})
+	if config.GetEnv() != config.EnvProduction {
 		app.Use(gin.Logger())
 		app.Use(gin.Recovery())
 	} else {
@@ -28,7 +33,8 @@ func Server() {
 	//Set up api v1
 	setupApiV1(app)
 
-	app.Run(config.GetServer("host") + ":" + config.GetServer("port"))
+	env := config.GetEnvValue()
+	app.Run(env.Server.Host + ":" + strconv.Itoa(env.Server.Port))
 }
 
 func setupApiV1(app *gin.Engine) {
