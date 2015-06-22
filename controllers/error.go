@@ -24,7 +24,7 @@ func (e *errorController) List(c *gin.Context) {
 }
 func (e *errorController) GetById(c *gin.Context) {
 	var errorId string
-	if errorId = c.ParamValue("errorId"); errorId == "" {
+	if errorId = c.Param("errorId"); errorId == "" {
 		if errorId = c.Request.URL.Query().Get("errorId"); errorId == "" {
 			c.Error(apiErrors.ThrowError(apiErrors.ApiErrorIdRequied))
 			return

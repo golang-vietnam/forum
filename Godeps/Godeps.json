@@ -9,8 +9,8 @@
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
-			"Comment": "v1.0rc1-7-g35fd7fb",
-			"Rev": "35fd7fb48050057729ec7336d84b6ed1a7dd7fd7"
+			"Comment": "v1.0rc1-104-g1a7ab6e",
+			"Rev": "1a7ab6e4d5fdc72d6df30ef562102ae6e0d18518"
 		},
 		{
 			"ImportPath": "github.com/manucorporat/sse",

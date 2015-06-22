@@ -1,4 +1,30 @@
-#Changelog
+#CHANGELOG
+
+###Gin 1.0rc2 (...)
+
+- [PERFORMANCE] Fast path for writting Content-Type.
+- [PERFORMANCE] Much faster 404 routing
+- [PERFORMANCE] Allocation optimizations
+- [PERFORMANCE] Faster root tree lookup
+- [PERFORMANCE] Zero overhead, String() and JSON() rendering.
+- [PERFORMANCE] Faster ClientIP parsing
+- [PERFORMANCE] Much faster SSE implementation
+- [NEW] Benchmarks suite
+- [NEW] Bind validation can be disabled and replaced with custom validators.
+- [NEW] More flexible HTML render
+- [FIX] Binding multipart form
+- [FIX] Integration tests
+- [FIX] Crash when binding non struct object in Context.
+- [FIX] RunTLS() implementation
+- [FIX] Logger() unit tests
+- [FIX] Better approach to avoid directory listing in StaticFS()
+- [FIX] Context.ClientIP() always returns the IP with trimmed spaces.
+- [FIX] Better warning when running in debug mode.
+- [FIX] Google App Engine integration. debugPrint does not use os.Stdout
+- [FIX] Fixes integer overflow in error type
+- [FIX] Error implements the json.Marshaller interface
+- [FIX] MIT license in every file
+
 
 ###Gin 1.0rc1 (May 22, 2015)
 

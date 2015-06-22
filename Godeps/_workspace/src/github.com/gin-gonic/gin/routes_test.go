@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -61,6 +61,7 @@ func testRouteNotOK(method string, t *testing.T) {
 func testRouteNotOK2(method string, t *testing.T) {
 	passed := false
 	router := New()
+	router.HandleMethodNotAllowed = true
 	var methodRoute string
 	if method == "POST" {
 		methodRoute = "GET"
@@ -75,6 +76,26 @@ func testRouteNotOK2(method string, t *testing.T) {
 
 	assert.False(t, passed)
 	assert.Equal(t, w.Code, http.StatusMethodNotAllowed)
+}
+
+func TestRouterMethod(t *testing.T) {
+	router := New()
+	router.PUT("/hey2", func(c *Context) {
+		c.String(200, "sup2")
+	})
+
+	router.PUT("/hey", func(c *Context) {
+		c.String(200, "called")
+	})
+
+	router.PUT("/hey3", func(c *Context) {
+		c.String(200, "sup3")
+	})
+
+	w := performRequest(router, "PUT", "/hey")
+
+	assert.Equal(t, w.Code, 200)
+	assert.Equal(t, w.Body.String(), "called")
 }
 
 func TestRouterGroupRouteOK(t *testing.T) {
@@ -124,14 +145,20 @@ func TestRouteParamsByName(t *testing.T) {
 	router.GET("/test/:name/:last_name/*wild", func(c *Context) {
 		name = c.Params.ByName("name")
 		lastName = c.Params.ByName("last_name")
-		wild = c.Params.ByName("wild")
+		var ok bool
+		wild, ok = c.Params.Get("wild")
 
-		assert.Equal(t, name, c.ParamValue("name"))
-		assert.Equal(t, lastName, c.ParamValue("last_name"))
+		assert.True(t, ok)
+		assert.Equal(t, name, c.Param("name"))
+		assert.Equal(t, name, c.Param("name"))
+		assert.Equal(t, lastName, c.Param("last_name"))
 
-		assert.Equal(t, name, c.DefaultParamValue("name", "nothing"))
-		assert.Equal(t, lastName, c.DefaultParamValue("last_name", "nothing"))
-		assert.Equal(t, c.DefaultParamValue("noKey", "default"), "default")
+		assert.Empty(t, c.Param("wtf"))
+		assert.Empty(t, c.Params.ByName("wtf"))
+
+		wtf, ok := c.Params.Get("wtf")
+		assert.Empty(t, wtf)
+		assert.False(t, ok)
 	})
 
 	w := performRequest(router, "GET", "/test/john/smith/is/super/great")
@@ -154,7 +181,7 @@ func TestRouteStaticFile(t *testing.T) {
 	f.WriteString("Gin Web Framework")
 	f.Close()
 
-	dir, filename := path.Split(f.Name())
+	dir, filename := filepath.Split(f.Name())
 
 	// SETUP gin
 	router := New()
@@ -179,7 +206,7 @@ func TestRouteStaticFile(t *testing.T) {
 // TestHandleStaticDir - ensure the root/sub dir handles properly
 func TestRouteStaticListingDir(t *testing.T) {
 	router := New()
-	router.StaticFS("/", http.Dir("./"), true)
+	router.StaticFS("/", Dir("./", true))
 
 	w := performRequest(router, "GET", "/")
 
@@ -218,9 +245,9 @@ func TestRouterMiddlewareAndStatic(t *testing.T) {
 	assert.Equal(t, w.HeaderMap.Get("x-GIN"), "Gin Framework")
 }
 
-func TestRouteNotAllowed(t *testing.T) {
+func TestRouteNotAllowedEnabled(t *testing.T) {
 	router := New()
-
+	router.HandleMethodNotAllowed = true
 	router.POST("/path", func(c *Context) {})
 	w := performRequest(router, "GET", "/path")
 	assert.Equal(t, w.Code, http.StatusMethodNotAllowed)
@@ -233,8 +260,24 @@ func TestRouteNotAllowed(t *testing.T) {
 	assert.Equal(t, w.Code, http.StatusTeapot)
 }
 
+func TestRouteNotAllowedDisabled(t *testing.T) {
+	router := New()
+	router.HandleMethodNotAllowed = false
+	router.POST("/path", func(c *Context) {})
+	w := performRequest(router, "GET", "/path")
+	assert.Equal(t, w.Code, 404)
+
+	router.NoMethod(func(c *Context) {
+		c.String(http.StatusTeapot, "responseText")
+	})
+	w = performRequest(router, "GET", "/path")
+	assert.Equal(t, w.Body.String(), "404 page not found")
+	assert.Equal(t, w.Code, 404)
+}
+
 func TestRouterNotFound(t *testing.T) {
 	router := New()
+	router.RedirectFixedPath = true
 	router.GET("/path", func(c *Context) {})
 	router.GET("/dir/", func(c *Context) {})
 	router.GET("/", func(c *Context) {})

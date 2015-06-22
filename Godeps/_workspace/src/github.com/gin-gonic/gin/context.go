@@ -28,36 +28,7 @@ const (
 	MIMEMultipartPOSTForm = binding.MIMEMultipartPOSTForm
 )
 
-const AbortIndex = math.MaxInt8 / 2
-
-var _ context.Context = &Context{}
-
-// Param is a single URL parameter, consisting of a key and a value.
-type Param struct {
-	Key   string
-	Value string
-}
-
-// Params is a Param-slice, as returned by the router.
-// The slice is ordered, the first URL parameter is also the first slice value.
-// It is therefore safe to read values by the index.
-type Params []Param
-
-// ByName returns the value of the first Param which key matches the given name.
-// If no matching Param is found, an empty string is returned.
-func (ps Params) Get(name string) (string, bool) {
-	for _, entry := range ps {
-		if entry.Key == name {
-			return entry.Value, true
-		}
-	}
-	return "", false
-}
-
-func (ps Params) ByName(name string) (va string) {
-	va, _ = ps.Get(name)
-	return
-}
+const AbortIndex int8 = math.MaxInt8 / 2
 
 // Context is the most important part of gin. It allows us to pass variables between middleware,
 // manage the flow, validate the JSON of a request and render a JSON response for example.
@@ -75,6 +46,8 @@ type Context struct {
 	Errors   errorMsgs
 	Accepted []string
 }
+
+var _ context.Context = &Context{}
 
 /************************************/
 /********** CONTEXT CREATION ********/
@@ -100,7 +73,7 @@ func (c *Context) Copy() *Context {
 }
 
 /************************************/
-/*************** FLOW ***************/
+/*********** FLOW CONTROL ***********/
 /************************************/
 
 // Next should be used only in the middlewares.
@@ -114,25 +87,32 @@ func (c *Context) Next() {
 	}
 }
 
-// Forces the system to not continue calling the pending handlers in the chain.
+// Returns if the currect context was aborted.
+func (c *Context) IsAborted() bool {
+	return c.index == AbortIndex
+}
+
+// Stops the system to continue calling the pending handlers in the chain.
+// Let's say you have an authorization middleware that validates if the request is authorized
+// if the authorization fails (the password does not match). This method (Abort()) should be called
+// in order to stop the execution of the actual handler.
 func (c *Context) Abort() {
 	c.index = AbortIndex
 }
 
-// AbortWithStatus is the same as Abort but also writes the specified response status code.
-// For example, the first handler checks if the request is authorized. If it's not, context.AbortWithStatus(401) should be called.
+// It calls Abort() and writes the headers with the specified status code.
+// For example, a failed attempt to authentificate a request could use: context.AbortWithStatus(401).
 func (c *Context) AbortWithStatus(code int) {
 	c.Writer.WriteHeader(code)
 	c.Abort()
 }
 
+// It calls AbortWithStatus() and Error() internally. This method stops the chain, writes the status code and
+// pushes the specified error to `c.Errors`.
+// See Context.Error() for more details.
 func (c *Context) AbortWithError(code int, err error) *Error {
 	c.AbortWithStatus(code)
 	return c.Error(err)
-}
-
-func (c *Context) IsAborted() bool {
-	return c.index == AbortIndex
 }
 
 /************************************/
@@ -161,8 +141,8 @@ func (c *Context) Error(err error) *Error {
 /******** METADATA MANAGEMENT********/
 /************************************/
 
-// Sets a new pair key/value just for the specified context.
-// It also lazy initializes the hashmap.
+// Sets a new pair key/value just for this context.
+// It also lazy initializes the hashmap if it was not used previously.
 func (c *Context) Set(key string, value interface{}) {
 	if c.Keys == nil {
 		c.Keys = make(map[string]interface{})
@@ -170,7 +150,8 @@ func (c *Context) Set(key string, value interface{}) {
 	c.Keys[key] = value
 }
 
-// Get returns the value for the given key or an error if the key does not exist.
+// Returns the value for the given key, ie: (value, true).
+// If the value does not exists it returns (nil, false)
 func (c *Context) Get(key string) (value interface{}, exists bool) {
 	if c.Keys != nil {
 		value, exists = c.Keys[key]
@@ -178,7 +159,7 @@ func (c *Context) Get(key string) (value interface{}, exists bool) {
 	return
 }
 
-// MustGet returns the value for the given key or panics if the value doesn't exist.
+// Returns the value for the given key if it exists, otherwise it panics.
 func (c *Context) MustGet(key string) interface{} {
 	if value, exists := c.Get(key); exists {
 		return value
@@ -190,63 +171,55 @@ func (c *Context) MustGet(key string) interface{} {
 /************ INPUT DATA ************/
 /************************************/
 
-/** Shortcut for c.Request.FormValue(key) */
-func (c *Context) FormValue(key string) (va string) {
-	va, _ = c.formValue(key)
+// Shortcut for c.Request.URL.Query().Get(key)
+func (c *Context) Query(key string) (va string) {
+	va, _ = c.query(key)
 	return
 }
 
-/** Shortcut for c.Request.PostFormValue(key) */
-func (c *Context) PostFormValue(key string) (va string) {
-	va, _ = c.postFormValue(key)
+// Shortcut for c.Request.PostFormValue(key)
+func (c *Context) PostForm(key string) (va string) {
+	va, _ = c.postForm(key)
 	return
 }
 
-/** Shortcut for c.Params.ByName(key) */
-func (c *Context) ParamValue(key string) (va string) {
-	va, _ = c.paramValue(key)
-	return
+// Shortcut for c.Params.ByName(key)
+func (c *Context) Param(key string) string {
+	return c.Params.ByName(key)
 }
 
-func (c *Context) DefaultPostFormValue(key, defaultValue string) string {
-	if va, ok := c.postFormValue(key); ok {
+func (c *Context) DefaultPostForm(key, defaultValue string) string {
+	if va, ok := c.postForm(key); ok {
 		return va
 	}
 	return defaultValue
 }
 
-func (c *Context) DefaultFormValue(key, defaultValue string) string {
-	if va, ok := c.formValue(key); ok {
+func (c *Context) DefaultQuery(key, defaultValue string) string {
+	if va, ok := c.query(key); ok {
 		return va
 	}
 	return defaultValue
 }
 
-func (c *Context) DefaultParamValue(key, defaultValue string) string {
-	if va, ok := c.paramValue(key); ok {
-		return va
-	}
-	return defaultValue
-}
-
-func (c *Context) paramValue(key string) (string, bool) {
-	return c.Params.Get(key)
-}
-
-func (c *Context) formValue(key string) (string, bool) {
+func (c *Context) query(key string) (string, bool) {
 	req := c.Request
-	req.ParseForm()
-	if values, ok := req.Form[key]; ok && len(values) > 0 {
+	if values, ok := req.URL.Query()[key]; ok && len(values) > 0 {
 		return values[0], true
 	}
 	return "", false
 }
 
-func (c *Context) postFormValue(key string) (string, bool) {
+func (c *Context) postForm(key string) (string, bool) {
 	req := c.Request
-	req.ParseForm()
-	if values, ok := req.PostForm[key]; ok && len(values) > 0 {
+	req.ParseMultipartForm(32 << 20) // 32 MB
+	if values := req.PostForm[key]; len(values) > 0 {
 		return values[0], true
+	}
+	if req.MultipartForm != nil && req.MultipartForm.File != nil {
+		if values := req.MultipartForm.Value[key]; len(values) > 0 {
+			return values[0], true
+		}
 	}
 	return "", false
 }
@@ -262,6 +235,7 @@ func (c *Context) Bind(obj interface{}) error {
 	return c.BindWith(obj, b)
 }
 
+// Shortcut for c.BindWith(obj, binding.JSON)
 func (c *Context) BindJSON(obj interface{}) error {
 	return c.BindWith(obj, binding.JSON)
 }
@@ -274,27 +248,44 @@ func (c *Context) BindWith(obj interface{}, b binding.Binding) error {
 	return nil
 }
 
+// Best effort algoritm to return the real client IP, it parses
+// X-Real-IP and X-Forwarded-For in order to work properly with reverse-proxies such us: nginx or haproxy.
 func (c *Context) ClientIP() string {
-	clientIP := c.Request.Header.Get("X-Real-IP")
-	if len(clientIP) > 0 {
-		return clientIP
+	if c.engine.ForwardedByClientIP {
+		clientIP := strings.TrimSpace(c.requestHeader("X-Real-Ip"))
+		if len(clientIP) > 0 {
+			return clientIP
+		}
+		clientIP = c.requestHeader("X-Forwarded-For")
+		if index := strings.IndexByte(clientIP, ','); index >= 0 {
+			clientIP = clientIP[0:index]
+		}
+		clientIP = strings.TrimSpace(clientIP)
+		if len(clientIP) > 0 {
+			return clientIP
+		}
 	}
-	clientIP = c.Request.Header.Get("X-Forwarded-For")
-	clientIP = strings.Split(clientIP, ",")[0]
-	if len(clientIP) > 0 {
-		return strings.TrimSpace(clientIP)
-	}
-	return c.Request.RemoteAddr
+	return strings.TrimSpace(c.Request.RemoteAddr)
 }
 
 func (c *Context) ContentType() string {
-	return filterFlags(c.Request.Header.Get("Content-Type"))
+	return filterFlags(c.requestHeader("Content-Type"))
+}
+
+func (c *Context) requestHeader(key string) string {
+	if values, _ := c.Request.Header[key]; len(values) > 0 {
+		return values[0]
+	}
+	return ""
 }
 
 /************************************/
 /******** RESPONSE RENDERING ********/
 /************************************/
 
+// Intelligent shortcut for c.Writer.Header().Set(key, value)
+// it writes a header in the response.
+// If value == "", this method removes the header `c.Writer.Header().Del(key)`
 func (c *Context) Header(key, value string) {
 	if len(value) == 0 {
 		c.Writer.Header().Del(key)
@@ -304,11 +295,15 @@ func (c *Context) Header(key, value string) {
 }
 
 func (c *Context) Render(code int, r render.Render) {
-	c.Writer.WriteHeader(code)
-	if err := r.Write(c.Writer); err != nil {
-		debugPrintError(err)
-		c.AbortWithError(500, err).SetType(ErrorTypeRender)
+	c.writermem.WriteHeader(code)
+	if err := r.Render(c.Writer); err != nil {
+		c.renderError(err)
 	}
+}
+
+func (c *Context) renderError(err error) {
+	debugPrintError(err)
+	c.AbortWithError(500, err).SetType(ErrorTypeRender)
 }
 
 // Renders the HTTP template specified by its file name.
@@ -319,28 +314,33 @@ func (c *Context) HTML(code int, name string, obj interface{}) {
 	c.Render(code, instance)
 }
 
+// Serializes the given struct as pretty JSON (indented + endlines) into the response body.
+// It also sets the Content-Type as "application/json".
+// WARNING: we recommend to use this only for development propuses since printing pretty JSON is
+// more CPU and bandwidth consuming. Use Context.JSON() instead.
 func (c *Context) IndentedJSON(code int, obj interface{}) {
 	c.Render(code, render.IndentedJSON{Data: obj})
 }
 
-// Serializes the given struct as JSON into the response body in a fast and efficient way.
+// Serializes the given struct as JSON into the response body.
 // It also sets the Content-Type as "application/json".
 func (c *Context) JSON(code int, obj interface{}) {
-	c.Render(code, render.JSON{Data: obj})
+	c.writermem.WriteHeader(code)
+	if err := render.WriteJSON(c.Writer, obj); err != nil {
+		c.renderError(err)
+	}
 }
 
-// Serializes the given struct as XML into the response body in a fast and efficient way.
+// Serializes the given struct as XML into the response body.
 // It also sets the Content-Type as "application/xml".
 func (c *Context) XML(code int, obj interface{}) {
 	c.Render(code, render.XML{Data: obj})
 }
 
-// Writes the given string into the response body and sets the Content-Type to "text/plain".
+// Writes the given string into the response body.
 func (c *Context) String(code int, format string, values ...interface{}) {
-	c.Render(code, render.String{
-		Format: format,
-		Data:   values},
-	)
+	c.writermem.WriteHeader(code)
+	render.WriteString(c.Writer, format, values)
 }
 
 // Returns a HTTP redirect to the specific location.
@@ -360,7 +360,7 @@ func (c *Context) Data(code int, contentType string, data []byte) {
 	})
 }
 
-// Writes the specified file into the body stream
+// Writes the specified file into the body stream in a efficient way.
 func (c *Context) File(filepath string) {
 	http.ServeFile(c.Writer, c.Request, filepath)
 }
@@ -426,7 +426,7 @@ func (c *Context) NegotiateFormat(offered ...string) string {
 		panic("you must provide at least one offer")
 	}
 	if c.Accepted == nil {
-		c.Accepted = parseAccept(c.Request.Header.Get("Accept"))
+		c.Accepted = parseAccept(c.requestHeader("Accept"))
 	}
 	if len(c.Accepted) == 0 {
 		return offered[0]
@@ -446,7 +446,7 @@ func (c *Context) SetAccepted(formats ...string) {
 }
 
 /************************************/
-/******** CONTENT NEGOTIATION *******/
+/***** GOLANG.ORG/X/NET/CONTEXT *****/
 /************************************/
 
 func (c *Context) Deadline() (deadline time.Time, ok bool) {
