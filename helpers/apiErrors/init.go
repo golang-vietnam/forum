@@ -34,6 +34,7 @@ var ApiErrors []apiError
 func init() {
 	ApiErrors = append(privateErrors, userErrors...)
 	ApiErrors = append(ApiErrors, apiErrorErrors...)
+	ApiErrors = append(ApiErrors, authErrors...)
 }
 
 func cloneError(e *apiError) *apiError {

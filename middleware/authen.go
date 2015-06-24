@@ -3,11 +3,12 @@ package middleware
 import (
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 )
 
 type authMiddlewareInterface interface {
-	RequireLogin(secret string) gin.HandlerFunc
+	RequireLogin() gin.HandlerFunc
 	RequirePermission(role int) gin.HandlerFunc
 }
 type authMiddleware struct {
@@ -25,10 +26,10 @@ func NewAuthMiddleware() authMiddlewareInterface {
 	- If logined set "user" in context
 
 **/
-func (a *authMiddleware) RequireLogin(secret string) gin.HandlerFunc {
+func (a *authMiddleware) RequireLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user, err := jwt_lib.ParseFromRequest(c.Request, func(token *jwt_lib.Token) (interface{}, error) {
-			b := ([]byte(secret))
+			b := ([]byte(config.GetSecret()))
 			return b, nil
 		})
 

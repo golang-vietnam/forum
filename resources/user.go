@@ -1,7 +1,6 @@
 package resources
 
 import (
-	// "github.com/gin-gonic/gin/binding"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
 	"golang.org/x/crypto/bcrypt"
@@ -18,7 +17,6 @@ type resourceUserInterface interface {
 	GetByEmail(email string) *models.User
 	Create(u *models.User) error
 	RemoveById(id bson.ObjectId)
-	// Validate(u *models.User) []error
 	ParseError(err error) []error
 	IsMatchPassword(hashedPassword string, password string) bool
 	HashPassword(password string) string
@@ -49,6 +47,9 @@ func (r *resourceUser) GetById(id bson.ObjectId) *models.User {
 func (r *resourceUser) GetByEmail(email string) *models.User {
 	var user models.User
 	if err := collection(userColName).Find(bson.M{"email": email}).One(&user); err != nil {
+		if err == mgo.ErrNotFound {
+			return nil
+		}
 		panic(err)
 	}
 	return &user
@@ -88,13 +89,6 @@ func (r *resourceUser) RemoveById(id bson.ObjectId) {
 		panic(err)
 	}
 }
-
-// func (r *resourceUser) Validate(u *models.User) []error {
-// 	if err := binding.Validate(u); err != nil {
-// 		return r.ParseError(err)
-// 	}
-// 	return []error{}
-// }
 
 /**
 

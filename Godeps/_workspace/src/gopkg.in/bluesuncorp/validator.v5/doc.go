@@ -10,7 +10,7 @@ Validate
 
 A simple example usage:
 
-	type UserDetail {
+	type UserDetail struct {
 		Details string `validate:"-"`
 	}
 
@@ -143,6 +143,11 @@ NOTE: Baked In Cross field validation only compares fields on the same struct,
 if cross field + cross struct validation is needed your own custom validator
 should be implemented.
 
+NOTE2: comma is the default separator of validation tags, if you wish to have a comma
+included within the parameter i.e. excludesall=, you will need to use the UTF-8 hex
+representation 0x2C, which is replaced in the code as a comma, so the above will
+become excludesall=0x2C
+
 Here is a list of the current built in validators:
 
 	-
@@ -163,7 +168,7 @@ Here is a list of the current built in validators:
 		verify it has been assigned.
 
 	omitempty
-		Allows conitional validation, for example if a field is not set with
+		Allows conditional validation, for example if a field is not set with
 		a value (Determined by the required validator) then other validation
 		such as min or max won't run, but if a value is set validation will run.
 		(Usage: omitempty)
@@ -356,6 +361,66 @@ Here is a list of the current built in validators:
 	excludesrune
 		This validates that a string value does not contain the supplied rune value.
 		(Usage: excludesrune=@)
+
+	isbn
+		This validates that a string value contains a valid isbn10 or isbn13 value.
+		(Usage: isbn)
+
+	isbn10
+		This validates that a string value contains a valid isbn10 value.
+		(Usage: isbn10)
+
+	isbn13
+		This validates that a string value contains a valid isbn13 value.
+		(Usage: isbn13)
+
+	uuid
+		This validates that a string value contains a valid UUID.
+		(Usage: uuid)
+
+	uuid3
+		This validates that a string value contains a valid version 3 UUID.
+		(Usage: uuid3)
+
+	uuid4
+		This validates that a string value contains a valid version 4 UUID.
+		(Usage: uuid4)
+
+	uuid5
+		This validates that a string value contains a valid version 5 UUID.
+		(Usage: uuid5)
+
+	ascii
+		This validates that a string value contains only ASCII characters.
+		NOTE: if the string is blank, this validates as true.
+		(Usage: ascii)
+
+	asciiprint
+		This validates that a string value contains only printable ASCII characters.
+		NOTE: if the string is blank, this validates as true.
+		(Usage: asciiprint)
+
+	multibyte
+		This validates that a string value contains one or more multibyte characters.
+		NOTE: if the string is blank, this validates as true.
+		(Usage: multibyte)
+
+	datauri
+		This validates that a string value contains a valid DataURI.
+		NOTE: this will also validate that the data portion is valid base64
+		(Usage: datauri)
+
+	latitude
+		This validates that a string value contains a valid latitude.
+		(Usage: latitude)
+
+	longitude
+		This validates that a string value contains a valid longitude.
+		(Usage: longitude)
+
+	ssn
+		This validates that a string value contains a valid U.S. Social Security Number.
+		(Usage: ssn)
 
 Validator notes:
 
