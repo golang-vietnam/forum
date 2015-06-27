@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	jwt_lib "github.com/dgrijalva/jwt-go"
@@ -9,15 +9,15 @@ import (
 	"time"
 )
 
-type authControllerInterface interface {
+type authHandlerInterface interface {
 	Login(c *gin.Context)
 }
 
-func NewAuthController() authControllerInterface {
-	return &authController{}
+func NewAuthHandler() authHandlerInterface {
+	return &authHandler{}
 }
 
-type authController struct{}
+type authHandler struct{}
 
 /**
 
@@ -26,7 +26,7 @@ type authController struct{}
 	- Find user
 
 **/
-func (a *authController) Login(c *gin.Context) {
+func (a *authHandler) Login(c *gin.Context) {
 	var userLogin models.UserLogin
 	if err := c.Bind(&userLogin); err != nil {
 		panic(err)

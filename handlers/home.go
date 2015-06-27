@@ -1,15 +1,15 @@
-package controllers
+package handlers
 
 import (
 	// "github.com/flosch/pongo2"
 	"github.com/gin-gonic/gin"
 )
 
-type homeControllerInterface interface {
+type homeHandlerInterface interface {
 	Index(c *gin.Context)
 }
 
-func NewHomeController() homeControllerInterface {
+func NewHomeHandler() homeHandlerInterface {
 	return &home{}
 }
 

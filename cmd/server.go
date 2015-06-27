@@ -3,8 +3,8 @@ package cmd
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
-	"github.com/golang-vietnam/forum/controllers"
 	"github.com/golang-vietnam/forum/database"
+	"github.com/golang-vietnam/forum/handlers"
 	"github.com/golang-vietnam/forum/middleware"
 	"runtime"
 	"strconv"
@@ -39,39 +39,39 @@ func Server() {
 
 func setupApiV1(app *gin.Engine) {
 	//Home
-	homeController := controllers.NewHomeController()
+	homeHandler := handlers.NewHomeHandler()
 	v1Group := app.Group("/v1")
 	{
-		v1Group.GET("/", homeController.Index)
+		v1Group.GET("/", homeHandler.Index)
 	}
-	apiErrorController := controllers.NewErrorController()
+	apiErrorHandler := handlers.NewErrorHandler()
 	apiErrorGroup := v1Group.Group("/errors")
 	{
-		apiErrorGroup.GET("/", apiErrorController.List)
-		apiErrorGroup.GET("/:errorId", apiErrorController.GetById)
+		apiErrorGroup.GET("/", apiErrorHandler.List)
+		apiErrorGroup.GET("/:errorId", apiErrorHandler.GetById)
 	}
 	//User
-	userController := controllers.NewUserController()
-	list := []gin.HandlerFunc{userController.Create}
+	userHandler := handlers.NewUserHandler()
+	list := []gin.HandlerFunc{userHandler.Create}
 	userGroup := v1Group.Group("/user")
 	{
-		userGroup.GET("/", userController.Detail)
+		userGroup.GET("/", userHandler.Detail)
 		userGroup.POST("/", list...)
 	}
 
 	//Post
-	postController := controllers.NewPostController()
+	postHandler := handlers.NewPostHandler()
 	postGroup := v1Group.Group("/post")
 	{
-		postGroup.GET("/", postController.Index)
-		postGroup.POST("/", postController.Create)
-		postGroup.GET("/:id", postController.GetById)
+		postGroup.GET("/", postHandler.Index)
+		postGroup.POST("/", postHandler.Create)
+		postGroup.GET("/:id", postHandler.GetById)
 	}
 
 	//Auth
-	authController := controllers.NewAuthController()
+	authHandler := handlers.NewAuthHandler()
 	authGroup := v1Group.Group("/auth")
 	{
-		authGroup.POST("/login", authController.Login)
+		authGroup.POST("/login", authHandler.Login)
 	}
 }

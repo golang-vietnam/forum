@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,27 +6,27 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type postControllerInterface interface {
+type postHandlerInterface interface {
 	Index(c *gin.Context)
 	Create(c *gin.Context)
 	GetById(c *gin.Context)
 }
 
-func NewPostController() postControllerInterface {
-	return &postController{}
+func NewPostHandler() postHandlerInterface {
+	return &postHandler{}
 }
 
-type postController struct {
+type postHandler struct {
 }
 
-func (p *postController) Index(c *gin.Context) {
+func (p *postHandler) Index(c *gin.Context) {
 	c.String(200, "Post will be here")
 }
 
 /*
    [WIP] Not complete yet, just some demo for test purpose
 */
-func (p *postController) Create(c *gin.Context) {
+func (p *postHandler) Create(c *gin.Context) {
 	var post models.Post
 	if err := c.Bind(&post); err != nil {
 		c.AbortWithError(400, err)
@@ -38,7 +38,7 @@ func (p *postController) Create(c *gin.Context) {
 	c.JSON(201, post)
 }
 
-func (p *postController) GetById(c *gin.Context) {
+func (p *postHandler) GetById(c *gin.Context) {
 	var post models.Post
 	var err error
 	id := c.Params.ByName("id")

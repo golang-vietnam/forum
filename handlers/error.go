@@ -1,28 +1,28 @@
-package controllers
+package handlers
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 )
 
-type errorControllerInterface interface {
+type errorHandlerInterface interface {
 	Error404(c *gin.Context)
 	List(c *gin.Context)
 	GetById(c *gin.Context)
 }
-type errorController struct {
+type errorHandler struct {
 }
 
-func NewErrorController() errorControllerInterface {
-	return &errorController{}
+func NewErrorHandler() errorHandlerInterface {
+	return &errorHandler{}
 }
-func (e *errorController) Error404(c *gin.Context) {
+func (e *errorHandler) Error404(c *gin.Context) {
 	c.String(404, "Page not found")
 }
-func (e *errorController) List(c *gin.Context) {
+func (e *errorHandler) List(c *gin.Context) {
 	c.JSON(200, gin.H{"errors": apiErrors.ApiErrors})
 }
-func (e *errorController) GetById(c *gin.Context) {
+func (e *errorHandler) GetById(c *gin.Context) {
 	var errorId string
 	if errorId = c.Param("errorId"); errorId == "" {
 		if errorId = c.Request.URL.Query().Get("errorId"); errorId == "" {
