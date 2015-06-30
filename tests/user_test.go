@@ -34,19 +34,44 @@ func CloneUserModel(user *userModel) *userModel {
 	return &newUser
 }
 
-func TestUser(t *testing.T) {
+func TestUserApi(t *testing.T) {
 
 	database.ClearAllUser()
 
-	Convey("GET user", t, func() {
-		Convey("Get not exist user shoud return not found error", func() {
-			So(1, ShouldEqual, 1)
-		})
+	Convey("Create with invalid email should return status 400 and email invalid message", t, func() {
+		response := do_request("POST", userApi, userInvalidEmailData)
+		body := parse_response(response)
+		var responseData Error
+		err := json.Unmarshal(body, &responseData)
+		So(err, ShouldBeNil)
+		So(response.StatusCode, ShouldEqual, 400)
+		So(responseData.Id, ShouldEqual, "USER_EMAIL_INVALID")
+		So(responseData.Message, ShouldEqual, "Email invalid")
+	})
+	Convey("Create with empty email should return status 400 and email required message", t, func() {
+		response := do_request("POST", userApi, userInvalidEmailEmptyData)
+		body := parse_response(response)
+		var responseData Error
+		err := json.Unmarshal(body, &responseData)
+		So(err, ShouldBeNil)
+		So(response.StatusCode, ShouldEqual, 400)
+		So(responseData.Id, ShouldEqual, "USER_EMAIL_REQUIRED")
+		So(responseData.Message, ShouldEqual, "Email is required")
+	})
+	Convey("Create with empty password should return status 400 and password required message", t, func() {
+		response := do_request("POST", userApi, userInvalidPasswordEmptyData)
+		body := parse_response(response)
+		var responseData Error
+		err := json.Unmarshal(body, &responseData)
+		So(err, ShouldBeNil)
+		So(response.StatusCode, ShouldEqual, 400)
+		So(responseData.Id, ShouldEqual, "USER_PASSWORD_REQUIRED")
+		So(responseData.Message, ShouldEqual, "Password is required")
 	})
 
-	Convey("POST create user", t, func() {
+	Convey("Create not exist user should response status 201 and correct user data.", t, func() {
 
-		Convey("Create not exist user should response status 201 and correct user data.", func() {
+		Convey("Should success", func() {
 			user := CloneUserModel(userValidData)
 			response := do_request("POST", userApi, user)
 			body := parse_response(response)
@@ -57,52 +82,35 @@ func TestUser(t *testing.T) {
 			So(responseUser.Email, ShouldEqual, user.Email)
 			So(responseUser.Name, ShouldEqual, user.Name)
 			So(responseUser.Role, ShouldEqual, 0)
+			Convey("Should in database", func() {
+				var userInDb userModel
+				database.Collection(UserColName).FindId(responseUser.Id).One(&userInDb)
+				So(userInDb.Id, ShouldEqual, responseUser.Id)
 
-			var userInDb userModel
-			database.Collection(UserColName).FindId(responseUser.Id).One(&userInDb)
-			So(userInDb.Id, ShouldEqual, responseUser.Id)
-
-			Convey("Create exist user should response status 400 and exist message", func() {
-				response := do_request("POST", userApi, userValidData)
-				body := parse_response(response)
-				var responseError Error
-				err := json.Unmarshal(body, &responseError)
-				So(err, ShouldBeNil)
-				So(response.StatusCode, ShouldEqual, 400)
-				So(responseError.Id, ShouldEqual, "USER_EXIST")
-				So(responseError.Message, ShouldEqual, "This user has been exist!")
+				Convey("Get exist user should response status 200 and user info", func() {
+					response := do_request("GET", userApi+responseUser.Id.Hex(), &data{})
+					body := parse_response(response)
+					var user userModel
+					err := json.Unmarshal(body, &user)
+					So(err, ShouldBeNil)
+					So(response.StatusCode, ShouldEqual, 200)
+				})
 			})
+
 		})
 
-		Convey("Create with invalid email should return status 400 and email invalid message", func() {
-			response := do_request("POST", userApi, userInvalidEmailData)
+		Convey("Create exist user should response status 400 and exist message", func() {
+
+			user := CloneUserModel(userValidData)
+			response := do_request("POST", userApi, user)
 			body := parse_response(response)
-			var responseData Error
-			err := json.Unmarshal(body, &responseData)
+			var responseError Error
+			err := json.Unmarshal(body, &responseError)
 			So(err, ShouldBeNil)
 			So(response.StatusCode, ShouldEqual, 400)
-			So(responseData.Id, ShouldEqual, "USER_EMAIL_INVALID")
-			So(responseData.Message, ShouldEqual, "Email invalid")
+			So(responseError.Id, ShouldEqual, "USER_EXIST")
+			So(responseError.Message, ShouldEqual, "This user has been exist!")
 		})
-		Convey("Create with empty email should return status 400 and email required message", func() {
-			response := do_request("POST", userApi, userInvalidEmailEmptyData)
-			body := parse_response(response)
-			var responseData Error
-			err := json.Unmarshal(body, &responseData)
-			So(err, ShouldBeNil)
-			So(response.StatusCode, ShouldEqual, 400)
-			So(responseData.Id, ShouldEqual, "USER_EMAIL_REQUIRED")
-			So(responseData.Message, ShouldEqual, "Email is required")
-		})
-		Convey("Create with empty password should return status 400 and password required message", func() {
-			response := do_request("POST", userApi, userInvalidPasswordEmptyData)
-			body := parse_response(response)
-			var responseData Error
-			err := json.Unmarshal(body, &responseData)
-			So(err, ShouldBeNil)
-			So(response.StatusCode, ShouldEqual, 400)
-			So(responseData.Id, ShouldEqual, "USER_PASSWORD_REQUIRED")
-			So(responseData.Message, ShouldEqual, "Password is required")
-		})
+
 	})
 }

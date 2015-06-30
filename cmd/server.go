@@ -55,7 +55,7 @@ func setupApiV1(app *gin.Engine) {
 	list := []gin.HandlerFunc{userHandler.Create}
 	userGroup := v1Group.Group("/user")
 	{
-		userGroup.GET("/", userHandler.Detail)
+		userGroup.GET("/:userId", userHandler.Detail)
 		userGroup.POST("/", list...)
 	}
 

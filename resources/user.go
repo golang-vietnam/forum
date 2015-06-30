@@ -13,7 +13,7 @@ const userColName = models.UserColName
 
 type resourceUserInterface interface {
 	ListAll() []*models.User
-	GetById(id bson.ObjectId) *models.User
+	GetById(id string) *models.User
 	GetByEmail(email string) *models.User
 	Create(u *models.User) error
 	RemoveById(id bson.ObjectId)
@@ -37,9 +37,12 @@ func (r *resourceUser) ListAll() []*models.User {
 	return users
 }
 
-func (r *resourceUser) GetById(id bson.ObjectId) *models.User {
+func (r *resourceUser) GetById(id string) *models.User {
 	var user models.User
-	if err := collection(userColName).FindId(id).One(&user); err != nil {
+	if err := collection(userColName).FindId(bson.ObjectIdHex(id)).One(&user); err != nil {
+		if err == mgo.ErrNotFound {
+			return nil
+		}
 		panic(err)
 	}
 	return &user

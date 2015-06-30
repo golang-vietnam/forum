@@ -10,10 +10,16 @@ const (
 	UserRoleMin          = "USER_ROLE_MIN"
 	UserRoleMax          = "USER_ROLE_MAX"
 	UserPasswordRequired = "USER_PASSWORD_REQUIRED"
+	UserNotFound         = "USER_NOT_FOUND"
 )
 
 var (
 	userErrors = []apiError{
+		apiError{
+			Id:      UserNotFound,
+			Message: "This user not found",
+			Status:  404,
+		},
 		apiError{
 			Id:      UserExist,
 			Message: "This user has been exist!",

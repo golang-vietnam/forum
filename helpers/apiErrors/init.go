@@ -4,6 +4,7 @@ type apiError struct {
 	Id      string `json:"id"`
 	Message string `json:"message"`
 	Status  int    `json:"status"`
+	Detail  string `json:"detail"`
 }
 
 func (e *apiError) Error() string {

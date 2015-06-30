@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
@@ -32,12 +33,13 @@ func (a *authMiddleware) RequireLogin() gin.HandlerFunc {
 			b := ([]byte(config.GetSecret()))
 			return b, nil
 		})
-
+		fmt.Print("...")
 		if err != nil {
 			c.Error(apiErrors.ThrowError(apiErrors.UserNotLogined))
 			return
 		}
 		c.Set("user", user)
+		c.Next()
 	}
 }
 

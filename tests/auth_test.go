@@ -14,6 +14,7 @@ type LoginResponse struct {
 }
 
 func TestAuthen(t *testing.T) {
+
 	database.ClearAllUser()
 	Convey("POST Login", t, func() {
 		Convey("Register new account must successful!", func() {
@@ -38,7 +39,7 @@ func TestAuthen(t *testing.T) {
 				Println(loginSuccess.Password)
 			})
 		})
-		Convey("Login with not have accout should fail", func() {
+		Convey("Login with not have account should fail", func() {
 			user := CloneUserModel(userValidData)
 			user.Email = "nothaveuser@email.com"
 			response := do_request("POST", authApi+"login", user)

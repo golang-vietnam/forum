@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
 )
 
@@ -18,7 +19,13 @@ type userHandler struct {
 }
 
 func (u *userHandler) Detail(c *gin.Context) {
-	c.String(200, "User page")
+	userId := c.Param("userId")
+	user := userResource.GetById(userId)
+	if user == nil {
+		c.Error(apiErrors.ThrowError(apiErrors.UserNotFound))
+		return
+	}
+	c.JSON(200, user)
 }
 
 /**
