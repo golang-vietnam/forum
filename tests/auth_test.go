@@ -15,8 +15,11 @@ type LoginResponse struct {
 
 func TestAuthen(t *testing.T) {
 
-	database.ClearAllUser()
 	Convey("POST Login", t, func() {
+		Reset(func() {
+			database.ClearAll()
+		})
+
 		Convey("Register new account must successful!", func() {
 			user := CloneUserModel(userValidData)
 			response := do_request("POST", userApi, user)
