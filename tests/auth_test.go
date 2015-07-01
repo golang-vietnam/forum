@@ -41,6 +41,7 @@ func TestAuthen(t *testing.T) {
 				So(loginSuccess.ApiKey, ShouldNotBeNil)
 				Println(loginSuccess.Password)
 			})
+
 		})
 		Convey("Login with not have account should fail", func() {
 			user := CloneUserModel(userValidData)

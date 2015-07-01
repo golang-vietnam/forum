@@ -86,31 +86,34 @@ func TestUserApi(t *testing.T) {
 				So(responseUser.Email, ShouldEqual, user.Email)
 				So(responseUser.Name, ShouldEqual, user.Name)
 				So(responseUser.Role, ShouldEqual, 0)
+
 				Convey("Should in database", func() {
 					var userInDb userModel
 					database.Collection(UserColName).FindId(responseUser.Id).One(&userInDb)
 					So(userInDb.Id, ShouldEqual, responseUser.Id)
 
-					Convey("Get exist user should response status 200 and user info", func() {
-						response := do_request("GET", userApi+responseUser.Id.Hex(), &data{})
-						body := parse_response(response)
-						var user userModel
-						err := json.Unmarshal(body, &user)
-						So(err, ShouldBeNil)
-						So(response.StatusCode, ShouldEqual, 200)
+				})
 
-						Convey("Create exist user should response status 400 and exist message", func() {
-							user := CloneUserModel(userValidData)
-							response := do_request("POST", userApi, user)
-							body := parse_response(response)
-							var responseError Error
-							err := json.Unmarshal(body, &responseError)
-							So(err, ShouldBeNil)
-							So(response.StatusCode, ShouldEqual, 400)
-							So(responseError.Id, ShouldEqual, "USER_EXIST")
-							So(responseError.Message, ShouldEqual, "This user has been exist!")
-						})
-					})
+				Convey("Get exist user should response status 200 and user info", func() {
+					response := do_request("GET", userApi+responseUser.Id.Hex(), &data{})
+					body := parse_response(response)
+					var user userModel
+					err := json.Unmarshal(body, &user)
+					So(err, ShouldBeNil)
+					So(response.StatusCode, ShouldEqual, 200)
+
+				})
+
+				Convey("Create exist user should response status 400 and exist message", func() {
+					user := CloneUserModel(userValidData)
+					response := do_request("POST", userApi, user)
+					body := parse_response(response)
+					var responseError Error
+					err := json.Unmarshal(body, &responseError)
+					So(err, ShouldBeNil)
+					So(response.StatusCode, ShouldEqual, 400)
+					So(responseError.Id, ShouldEqual, "USER_EXIST")
+					So(responseError.Message, ShouldEqual, "This user has been exist!")
 				})
 
 			})
