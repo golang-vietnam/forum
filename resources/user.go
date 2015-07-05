@@ -1,6 +1,7 @@
 package resources
 
 import (
+	// "fmt"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
 	"golang.org/x/crypto/bcrypt"
@@ -13,9 +14,10 @@ const userColName = models.UserColName
 
 type resourceUserInterface interface {
 	ListAll() []*models.User
-	GetById(id string) *models.User
+	GetById(id string) (*models.User, error)
 	GetByEmail(email string) *models.User
 	Create(u *models.User) error
+	Edit(id string, u *models.User) error
 	RemoveById(id bson.ObjectId)
 	ParseError(err error) []error
 	IsMatchPassword(hashedPassword string, password string) bool
@@ -37,16 +39,22 @@ func (r *resourceUser) ListAll() []*models.User {
 	return users
 }
 
-func (r *resourceUser) GetById(id string) *models.User {
+func (r *resourceUser) GetById(id string) (*models.User, error) {
+
+	if !bson.IsObjectIdHex(id) {
+		return nil, apiErrors.ThrowError(apiErrors.UserIdInValid)
+	}
+
 	var user models.User
 	if err := collection(userColName).FindId(bson.ObjectIdHex(id)).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
-			return nil
+			return nil, apiErrors.ThrowError(apiErrors.UserNotFound)
 		}
 		panic(err)
 	}
-	return &user
+	return &user, nil
 }
+
 func (r *resourceUser) GetByEmail(email string) *models.User {
 	var user models.User
 	if err := collection(userColName).Find(bson.M{"email": email}).One(&user); err != nil {
@@ -84,6 +92,19 @@ func (r *resourceUser) Create(u *models.User) error {
 		panic(err)
 	}
 
+	return nil
+}
+
+func (r *resourceUser) Edit(id string, u *models.User) error {
+	if !bson.IsObjectIdHex(id) {
+		return apiErrors.ThrowError(apiErrors.UserIdInValid)
+	}
+	if err := collection(userColName).UpdateId(bson.ObjectIdHex(id), u); err != nil {
+		if err == mgo.ErrNotFound {
+			return apiErrors.ThrowError(apiErrors.UserNotFound)
+		}
+		panic(err)
+	}
 	return nil
 }
 

@@ -34,5 +34,15 @@ func TestErrorApi(t *testing.T) {
 			So(responseApiError.Id, ShouldEqual, apiErrors.ServerError)
 		})
 
+		Convey("Get invalid error Id return not api not found and status 404", func() {
+			response := do_request("GET", errorApi+"NO_ERROR", &data{})
+			body := parse_response(response)
+			var responseApiError apiErrors.ApiError
+			err := json.Unmarshal(body, &responseApiError)
+			So(err, ShouldBeNil)
+			So(response.StatusCode, ShouldEqual, http.StatusNotFound)
+			So(responseApiError.Id, ShouldEqual, apiErrors.ApiErrorNotFound)
+		})
+
 	})
 }

@@ -93,6 +93,7 @@ func routeV1(app *gin.Engine) {
 	userGroup := v1Group.Group("/user")
 	{
 		userGroup.GET("/:userId", userHandler.Detail)
+		userGroup.PUT("/:userId", userHandler.Edit)
 		userGroup.POST("/", list...)
 	}
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/golang-vietnam/forum/database"
 	. "github.com/smartystreets/goconvey/convey"
+	"gopkg.in/mgo.v2/bson"
 	"testing"
 )
 
@@ -102,6 +103,51 @@ func TestUserApi(t *testing.T) {
 					So(err, ShouldBeNil)
 					So(response.StatusCode, ShouldEqual, 200)
 
+				})
+				Convey("Get invalid id should fail", func() {
+					user := CloneUserModel(userValidData)
+					response := do_request("GET", userApi+"helloId", user)
+					body := parse_response(response)
+					var responseError Error
+					err := json.Unmarshal(body, &responseError)
+					So(err, ShouldBeNil)
+					So(responseError.Id, ShouldEqual, "USER_ID_INVALID")
+					So(response.StatusCode, ShouldEqual, 400)
+				})
+				Convey("Update exist user should success", func() {
+					user := CloneUserModel(userValidData)
+					user.Name = "New Name"
+					user.Id = responseUser.Id
+					response := do_request("PUT", userApi+responseUser.Id.Hex(), user)
+					body := parse_response(response)
+					var userRes userModel
+					err := json.Unmarshal(body, &userRes)
+					So(err, ShouldBeNil)
+					So(response.StatusCode, ShouldEqual, 200)
+					So(userRes.Name, ShouldEqual, user.Name)
+				})
+				Convey("Update not exist user should fail", func() {
+					user := CloneUserModel(userValidData)
+					user.Name = "New Name"
+					response := do_request("PUT", userApi+bson.NewObjectId().Hex(), user)
+					body := parse_response(response)
+					var responseError Error
+					err := json.Unmarshal(body, &responseError)
+					So(err, ShouldBeNil)
+					So(responseError.Id, ShouldEqual, "USER_NOT_FOUND")
+					So(response.StatusCode, ShouldEqual, 404)
+				})
+
+				Convey("Update invalid id should fail", func() {
+					user := CloneUserModel(userValidData)
+					user.Name = "New Name"
+					response := do_request("PUT", userApi+"helloId", user)
+					body := parse_response(response)
+					var responseError Error
+					err := json.Unmarshal(body, &responseError)
+					So(err, ShouldBeNil)
+					So(responseError.Id, ShouldEqual, "USER_ID_INVALID")
+					So(response.StatusCode, ShouldEqual, 400)
 				})
 
 				Convey("Create exist user should response status 400 and exist message", func() {
