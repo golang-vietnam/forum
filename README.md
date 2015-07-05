@@ -19,6 +19,5 @@ On `development` mode we use [Gin](https://github.com/codegangsta/gin) to live r
     make
 
 ### Test server
-- Run server on test mode: `make runOnTest`
-- In other terminal: `make test` or `make testOnWeb` then see test on `localhost:8080`
-
+	
+	make test
