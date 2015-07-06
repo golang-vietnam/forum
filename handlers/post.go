@@ -20,7 +20,7 @@ const (
 )
 
 func NewPostHandler() postHandlerInterface {
-	return &postController{}
+	return &postHandler{}
 }
 
 type postHandler struct {
@@ -64,7 +64,7 @@ func (p *postHandler) GetById(c *gin.Context) {
 	c.JSON(200, post)
 }
 
-func (p *postController) ListPaging(c *gin.Context) {
+func (p *postHandler) ListPaging(c *gin.Context) {
 	var posts []models.Post
 	var err error
 	pageParam := c.DefaultQuery("page", "1")
@@ -78,16 +78,11 @@ func (p *postController) ListPaging(c *gin.Context) {
 	c.JSON(200, posts)
 }
 
-func (p *postController) ListPagingByCategory(c *gin.Context) {
+func (p *postHandler) ListPagingByCategory(c *gin.Context) {
 	var posts []models.Post
 	var err error
 	pageParam := c.DefaultQuery("page", "1")
-	categoryParam := c.DefaultQuery("category", "1")
-
-	pageIndex, err := strconv.Atoi(pageParam)
-	if err != nil {
-		pageIndex = 1
-	}
+	// categoryParam := c.DefaultQuery("category", "1")
 
 	pageIndex, err := strconv.Atoi(pageParam)
 	if err != nil {
