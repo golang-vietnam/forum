@@ -4,13 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/models"
 	"gopkg.in/mgo.v2/bson"
+	"strconv"
 )
 
 type postControllerInterface interface {
 	Index(c *gin.Context)
 	Create(c *gin.Context)
 	GetById(c *gin.Context)
+	ListPaging(c *gin.Context)
+	ListPagingByCategory(c *gin.Context)
 }
+
+const (
+	ITEMS_PER_PAGE = 15
+)
 
 func NewPostController() postControllerInterface {
 	return &postController{}
@@ -55,4 +62,38 @@ func (p *postController) GetById(c *gin.Context) {
 	}
 
 	c.JSON(200, post)
+}
+
+func (p *postController) ListPaging(c *gin.Context) {
+	var posts []models.Post
+	var err error
+	pageParam := c.DefaultQuery("page", "1")
+
+	pageIndex, err := strconv.Atoi(pageParam)
+	if err != nil {
+		pageIndex = 1
+	}
+
+	posts = postResource.ListPaging(pageIndex, ITEMS_PER_PAGE)
+	c.JSON(200, posts)
+}
+
+func (p *postController) ListPagingByCategory(c *gin.Context) {
+	var posts []models.Post
+	var err error
+	pageParam := c.DefaultQuery("page", "1")
+	categoryParam := c.DefaultQuery("category", "1")
+
+	pageIndex, err := strconv.Atoi(pageParam)
+	if err != nil {
+		pageIndex = 1
+	}
+
+	pageIndex, err := strconv.Atoi(pageParam)
+	if err != nil {
+		pageIndex = 1
+	}
+
+	posts = postResource.ListPaging(pageIndex, ITEMS_PER_PAGE)
+	c.JSON(200, posts)
 }

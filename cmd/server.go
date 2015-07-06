@@ -53,7 +53,7 @@ func setupApiV1(app *gin.Engine) {
 	//User
 	userController := controllers.NewUserController()
 	list := []gin.HandlerFunc{userController.Create}
-	userGroup := v1Group.Group("/user")
+	userGroup := v1Group.Group("/users")
 	{
 		userGroup.GET("/", userController.Detail)
 		userGroup.POST("/", list...)
@@ -61,11 +61,11 @@ func setupApiV1(app *gin.Engine) {
 
 	//Post
 	postController := controllers.NewPostController()
-	postGroup := v1Group.Group("/post")
+	postGroup := v1Group.Group("/posts")
 	{
 		postGroup.GET("/", postController.Index)
-		postGroup.POST("/", postController.Create)
-		postGroup.GET("/:id", postController.GetById)
+		postGroup.POST("/category/:category", postController.Create)
+		postGroup.GET("/post/:id", postController.GetById)
 	}
 
 	//Auth
