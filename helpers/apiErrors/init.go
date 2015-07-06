@@ -4,6 +4,7 @@ type apiError struct {
 	Id      string `json:"id"`
 	Message string `json:"message"`
 	Status  int    `json:"status"`
+	Detail  string `json:"detail"`
 }
 
 func (e *apiError) Error() string {
@@ -34,6 +35,7 @@ var ApiErrors []apiError
 func init() {
 	ApiErrors = append(privateErrors, userErrors...)
 	ApiErrors = append(ApiErrors, apiErrorErrors...)
+	ApiErrors = append(ApiErrors, authErrors...)
 }
 
 func cloneError(e *apiError) *apiError {

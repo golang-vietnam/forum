@@ -3,75 +3,113 @@ package cmd
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
-	"github.com/golang-vietnam/forum/controllers"
 	"github.com/golang-vietnam/forum/database"
+	"github.com/golang-vietnam/forum/handlers"
 	"github.com/golang-vietnam/forum/middleware"
+	"gopkg.in/tylerb/graceful.v1"
+	"net/http"
 	"runtime"
 	"strconv"
+	"time"
 )
 
-func Server() {
+var (
+	srv *graceful.Server
+)
+
+type server struct {
+	srv  *graceful.Server
+	done chan bool
+}
+
+func Start() error {
+	app := setup()
+	env := config.GetEnvValue()
+	srv = &graceful.Server{
+		Timeout: 10 * time.Second,
+		Server: &http.Server{
+			Addr:    env.Server.Host + ":" + strconv.Itoa(env.Server.Port),
+			Handler: app,
+		},
+	}
+	return srv.ListenAndServe()
+}
+
+func Stop() {
+	if srv == nil {
+		panic("Server not running")
+	}
+	srv.Stop(0)
+}
+
+func setup() *gin.Engine {
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	if _, err := database.InitDb(); err != nil {
 		panic(err)
 	}
-
 	app := gin.New()
+
 	app.Use(func(c *gin.Context) {
 		c.Set(config.SecretKey, config.GetSecret())
 		c.Next()
 	})
-	if config.GetEnv() != config.EnvProduction {
-		app.Use(gin.Logger())
-		app.Use(gin.Recovery())
-	} else {
+
+	if config.GetEnv() == config.EnvProduction {
 		app.Use(middleware.Recovery())
+	} else {
+		app.Use(gin.Recovery())
+	}
+
+	if config.GetEnv() == config.EnvTesting {
+		gin.SetMode(gin.TestMode)
+	} else {
+		app.Use(gin.Logger())
 	}
 
 	app.Use(middleware.ErrorHandler())
 	app.Static("/public", "./public")
 	//Set up api v1
-	setupApiV1(app)
-
-	env := config.GetEnvValue()
-	app.Run(env.Server.Host + ":" + strconv.Itoa(env.Server.Port))
+	routeV1(app)
+	return app
 }
 
-func setupApiV1(app *gin.Engine) {
+func routeV1(app *gin.Engine) {
 	//Home
-	homeController := controllers.NewHomeController()
+	homeHandler := handlers.NewHomeHandler()
 	v1Group := app.Group("/v1")
 	{
-		v1Group.GET("/", homeController.Index)
+		v1Group.GET("/", homeHandler.Index)
 	}
-	apiErrorController := controllers.NewErrorController()
+	apiErrorHandler := handlers.NewErrorHandler()
 	apiErrorGroup := v1Group.Group("/errors")
 	{
-		apiErrorGroup.GET("/", apiErrorController.List)
-		apiErrorGroup.GET("/:errorId", apiErrorController.GetById)
+		apiErrorGroup.GET("/", apiErrorHandler.List)
+		apiErrorGroup.GET("/:errorId", apiErrorHandler.GetById)
 	}
 	//User
-	userController := controllers.NewUserController()
-	list := []gin.HandlerFunc{userController.Create}
-	userGroup := v1Group.Group("/users")
+	userHandler := handlers.NewUserHandler()
+	list := []gin.HandlerFunc{userHandler.Create}
+	userGroup := v1Group.Group("/user")
 	{
-		userGroup.GET("/", userController.Detail)
+		userGroup.GET("/:userId", userHandler.Detail)
+		userGroup.PUT("/:userId", userHandler.Edit)
 		userGroup.POST("/", list...)
 	}
 
 	//Post
-	postController := controllers.NewPostController()
-	postGroup := v1Group.Group("/posts")
+	postHandler := handlers.NewPostHandler()
+	postGroup := v1Group.Group("/post")
 	{
-		postGroup.GET("/", postController.Index)
-		postGroup.POST("/category/:category", postController.Create)
-		postGroup.GET("/post/:id", postController.GetById)
+		postGroup.GET("/", postHandler.Index)
+		postGroup.POST("/", postHandler.Create)
+		postGroup.GET("/:id", postHandler.GetById)
 	}
 
 	//Auth
-	authController := controllers.NewAuthController()
+	authHandler := handlers.NewAuthHandler()
 	authGroup := v1Group.Group("/auth")
 	{
-		authGroup.POST("/login", authController.Login)
+		authGroup.POST("/login", authHandler.Login)
 	}
 }

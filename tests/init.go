@@ -3,13 +3,14 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/golang-vietnam/forum/cmd"
 	"github.com/golang-vietnam/forum/config"
-	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/models"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type Error struct {
@@ -27,6 +28,7 @@ var (
 	userApi  string
 	authApi  string
 	errorApi string
+	serv     chan bool
 )
 
 func getConnectString(host string, port int) string {
@@ -36,6 +38,12 @@ func getConnectString(host string, port int) string {
 	}
 	return u.String()
 }
+
+func runServer() {
+	cmd.Start()
+	serv <- true
+}
+
 func init() {
 	config.Loads("../config/config.yml")
 	config.SetEnv(config.EnvTesting)
@@ -44,7 +52,11 @@ func init() {
 	userApi = server + "/v1/user/"
 	authApi = server + "/v1/auth/"
 	errorApi = server + "/v1/errors/"
-	database.InitDb()
+	go runServer()
+	select {
+	case <-serv:
+	case <-time.After(time.Second * 2):
+	}
 }
 
 type data struct {

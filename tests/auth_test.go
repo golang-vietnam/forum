@@ -8,11 +8,20 @@ import (
 	"testing"
 )
 
+type LoginResponse struct {
+	models.User `json:"user"`
+	ApiKey      string `json:"api-key"`
+}
+
 func TestAuthen(t *testing.T) {
-	database.ClearAllUser()
+
 	Convey("POST Login", t, func() {
+		Reset(func() {
+			database.ClearAll()
+		})
+
 		Convey("Register new account must successful!", func() {
-			user := &models.User{Email: "ntnguyen@ubisen.com", Name: "Nguyen The Nguyen", Password: "golang", Role: 1}
+			user := CloneUserModel(userValidData)
 			response := do_request("POST", userApi, user)
 			body := parse_response(response)
 			var responseUser models.User
@@ -21,14 +30,28 @@ func TestAuthen(t *testing.T) {
 			So(response.StatusCode, ShouldEqual, 201)
 
 			Convey("Login with correct account should successful!", func() {
-				response := do_request("POST", authApi+"login", &models.UserLogin{Email: "ntnguyen@ubisen.com", Password: "golang"})
+				user := CloneUserModel(userValidData)
+				response := do_request("POST", authApi+"login", user)
 				body := parse_response(response)
-				var responseUser models.User
-				err := json.Unmarshal(body, &responseUser)
+				var loginSuccess LoginResponse
+				err := json.Unmarshal(body, &loginSuccess)
 				So(err, ShouldBeNil)
 				So(response.StatusCode, ShouldEqual, 200)
-				So(responseUser.Email, ShouldEqual, "ntnguyen@ubisen.com")
+				So(loginSuccess.Email, ShouldEqual, user.Email)
+				So(loginSuccess.ApiKey, ShouldNotBeNil)
+				Println(loginSuccess.Password)
 			})
+
+		})
+		Convey("Login with not have account should fail", func() {
+			user := CloneUserModel(userValidData)
+			user.Email = "nothaveuser@email.com"
+			response := do_request("POST", authApi+"login", user)
+			body := parse_response(response)
+
+			var loginFail Error
+			err := json.Unmarshal(body, &loginFail)
+			So(err, ShouldBeNil)
 		})
 
 	})

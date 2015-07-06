@@ -15,6 +15,7 @@ func showUsage() {
 	fmt.Println("'forum test' # run server on test mode")
 	fmt.Println("'forum deploy' # run server on production mode")
 }
+
 func main() {
 	if len(os.Args) != 2 && len(os.Args) != 1 {
 		fmt.Println("Invalid command usage\n")
@@ -38,5 +39,5 @@ func main() {
 		showUsage()
 		os.Exit(1)
 	}
-	cmd.Server()
+	cmd.Start()
 }
