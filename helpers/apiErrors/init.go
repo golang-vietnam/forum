@@ -12,17 +12,15 @@ func (e *apiError) Error() string {
 }
 
 func (e *apiError) WithNewMessage(message string) *apiError {
-	return &apiError{
-		Id:      e.Id,
-		Message: message,
-		Status:  e.Status,
-	}
+	e.Message = message
+	return e
 }
-func NewError(id string, message string, status int) *apiError {
+func NewError(id string, message string, status int, detail string) *apiError {
 	return &apiError{
 		Id:      id,
 		Message: message,
 		Status:  status,
+		Detail:  detail,
 	}
 }
 
