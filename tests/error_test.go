@@ -24,6 +24,7 @@ func TestErrorApi(t *testing.T) {
 			So(response.StatusCode, ShouldEqual, http.StatusOK)
 			So(len(responseApiErrors.Errors), ShouldEqual, len(apiErrors.ApiErrors))
 		})
+
 		Convey("Get an api error should return an api error and status 200", func() {
 			response := do_request("GET", errorApi+apiErrors.ServerError, &data{})
 			body := parse_response(response)

@@ -6,40 +6,14 @@ import (
 	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/handlers"
 	"github.com/golang-vietnam/forum/middleware"
-	"gopkg.in/tylerb/graceful.v1"
-	"net/http"
 	"runtime"
 	"strconv"
-	"time"
 )
-
-var (
-	srv *graceful.Server
-)
-
-type server struct {
-	srv  *graceful.Server
-	done chan bool
-}
 
 func Start() error {
 	app := setup()
 	env := config.GetEnvValue()
-	srv = &graceful.Server{
-		Timeout: 10 * time.Second,
-		Server: &http.Server{
-			Addr:    env.Server.Host + ":" + strconv.Itoa(env.Server.Port),
-			Handler: app,
-		},
-	}
-	return srv.ListenAndServe()
-}
-
-func Stop() {
-	if srv == nil {
-		panic("Server not running")
-	}
-	srv.Stop(0)
+	return app.Run(env.Server.Host + ":" + strconv.Itoa(env.Server.Port))
 }
 
 func setup() *gin.Engine {
@@ -75,6 +49,8 @@ func setup() *gin.Engine {
 }
 
 func routeV1(app *gin.Engine) {
+	loads := middleware.NewLoads()
+
 	//Home
 	homeHandler := handlers.NewHomeHandler()
 	v1Group := app.Group("/v1")
@@ -92,7 +68,7 @@ func routeV1(app *gin.Engine) {
 	list := []gin.HandlerFunc{userHandler.Create}
 	userGroup := v1Group.Group("/user")
 	{
-		userGroup.GET("/:userId", userHandler.Detail)
+		userGroup.GET("/:userId", loads.LoadUserById(), userHandler.Detail)
 		userGroup.PUT("/:userId", userHandler.Edit)
 		userGroup.POST("/", list...)
 	}

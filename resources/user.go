@@ -1,7 +1,6 @@
 package resources
 
 import (
-	// "fmt"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
 	"golang.org/x/crypto/bcrypt"
@@ -15,7 +14,7 @@ const userColName = models.UserColName
 type resourceUserInterface interface {
 	ListAll() []*models.User
 	GetById(id string) (*models.User, error)
-	GetByEmail(email string) *models.User
+	GetByEmail(email string) (*models.User, error)
 	Create(u *models.User) error
 	Edit(id string, u *models.User) error
 	RemoveById(id bson.ObjectId)
@@ -55,15 +54,15 @@ func (r *resourceUser) GetById(id string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *resourceUser) GetByEmail(email string) *models.User {
+func (r *resourceUser) GetByEmail(email string) (*models.User, error) {
 	var user models.User
 	if err := collection(userColName).Find(bson.M{"email": email}).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
-			return nil
+			return nil, apiErrors.ThrowError(apiErrors.UserNotFound)
 		}
 		panic(err)
 	}
-	return &user
+	return &user, nil
 }
 
 /**

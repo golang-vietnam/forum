@@ -33,10 +33,6 @@
 			"Rev": "10576091dc82c9c109dddfb5ed77bdbbc87a9af8"
 		},
 		{
-			"ImportPath": "golang.org/x/net/netutil",
-			"Rev": "10576091dc82c9c109dddfb5ed77bdbbc87a9af8"
-		},
-		{
 			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
 			"Comment": "v5.8",
 			"Rev": "c06d47f593d786142436a43334f724d819093c04"
@@ -45,11 +41,6 @@
 			"ImportPath": "gopkg.in/mgo.v2",
 			"Comment": "r2015.06.03-3-g3569c88",
 			"Rev": "3569c88678d88179dcbd68d02ab081cbca3cd4d0"
-		},
-		{
-			"ImportPath": "gopkg.in/tylerb/graceful.v1",
-			"Comment": "v1.2.1",
-			"Rev": "ac9ebe4f1ee151ac1eeeaef32957085cba64d508"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",

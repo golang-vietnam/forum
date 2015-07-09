@@ -55,7 +55,7 @@ func init() {
 	go runServer()
 	select {
 	case <-serv:
-	case <-time.After(time.Second * 2):
+	case <-time.After(time.Second * 1):
 	}
 }
 

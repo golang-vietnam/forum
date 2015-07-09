@@ -12,10 +12,16 @@ const (
 	UserPasswordRequired = "USER_PASSWORD_REQUIRED"
 	UserNotFound         = "USER_NOT_FOUND"
 	UserIdInValid        = "USER_ID_INVALID"
+	UserIdParamRequired  = "USER_ID_PARAM_REQUIRED"
 )
 
 var (
 	userErrors = []apiError{
+		apiError{
+			Id:      UserIdParamRequired,
+			Message: "userId in parameter required",
+			Status:  400,
+		},
 		apiError{
 			Id:      UserIdInValid,
 			Message: "userId must objectId",

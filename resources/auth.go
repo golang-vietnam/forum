@@ -21,8 +21,8 @@ func NewResourceAuth() resourceAuthInterface {
 }
 
 func (r *resourceAuth) Login(email string, password string) (*models.User, error) {
-	user := newResourceUser.GetByEmail(email)
-	if user == nil {
+	user, err := newResourceUser.GetByEmail(email)
+	if err != nil {
 		return nil, apiErrors.ThrowError(apiErrors.AuthEmailInvalid)
 	}
 	if !newResourceUser.IsMatchPassword(user.Password, password) {

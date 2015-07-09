@@ -6,11 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
+	"github.com/golang-vietnam/forum/models"
 )
 
 type authMiddlewareInterface interface {
 	RequireLogin() gin.HandlerFunc
-	RequirePermission(role int) gin.HandlerFunc
+	UserRequirePermission(role int) gin.HandlerFunc
 }
 type authMiddleware struct {
 }
@@ -36,9 +37,9 @@ func (a *authMiddleware) RequireLogin() gin.HandlerFunc {
 		fmt.Print("...")
 		if err != nil {
 			c.Error(apiErrors.ThrowError(apiErrors.UserNotLogined))
-			return
+			c.Abort()
 		}
-		c.Set("user", user)
+		c.Set("currentUser", user)
 		c.Next()
 	}
 }
@@ -46,13 +47,42 @@ func (a *authMiddleware) RequireLogin() gin.HandlerFunc {
 /**
 
 	TODO:
-	- If user not login as gin context get "user" is nill -> user role = normalUser
 	- If user has role < role param return access deny error
 	- If user has role >= role param -> pass
 
 **/
-func (a *authMiddleware) RequirePermission(role int) gin.HandlerFunc {
+func (a *authMiddleware) UserRequirePermission(role int) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user, ok := c.MustGet("currentUser").(*models.User)
+		if !ok {
+			panic("data with key currentUser must models.User type")
+		}
+		if user.Role < role {
+			c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
+			c.Abort()
+		}
+		c.Next()
+	}
+}
+
+func (a *authMiddleware) UserHasAuthorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
+		currentUser, currentUserOk := c.MustGet("currentUser").(*models.User)
+		if !currentUserOk {
+			panic("data with key currentUser must models.User type")
+		}
+
+		userData, userDataOk := c.MustGet("userData").(*models.User)
+		if !userDataOk {
+			panic("data with key userData must models.User type")
+		}
+
+		if currentUser.Id != userData.Id {
+			c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
+			c.Abort()
+		}
+
+		c.Next()
 	}
 }

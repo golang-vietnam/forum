@@ -43,9 +43,21 @@ func TestAuthen(t *testing.T) {
 			})
 
 		})
+
 		Convey("Login with not have account should fail", func() {
 			user := CloneUserModel(userValidData)
 			user.Email = "nothaveuser@email.com"
+			response := do_request("POST", authApi+"login", user)
+			body := parse_response(response)
+
+			var loginFail Error
+			err := json.Unmarshal(body, &loginFail)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("Login with invalid email should fail", func() {
+			user := CloneUserModel(userValidData)
+			user.Email = "notemail"
 			response := do_request("POST", authApi+"login", user)
 			body := parse_response(response)
 

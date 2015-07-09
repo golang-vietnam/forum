@@ -19,13 +19,18 @@ type userHandler struct {
 }
 
 func (u *userHandler) Detail(c *gin.Context) {
-	userId := c.Param("userId")
-	user, err := userResource.GetById(userId)
-	if err != nil {
-		c.Error(err)
-		return
-	}
+	user := c.MustGet("userData")
 	c.JSON(200, user)
+	// if c.Get("user") {
+
+	// }
+	// userId := c.Param("userId")
+	// user, err := userResource.GetById(userId)
+	// if err != nil {
+	// 	c.Error(err)
+	// 	return
+	// }
+
 }
 
 /**
