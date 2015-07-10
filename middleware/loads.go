@@ -7,11 +7,11 @@ import (
 type loads struct {
 }
 
-type LoadsInterface interface {
+type loadsInterface interface {
 	LoadUserById() gin.HandlerFunc
 }
 
-func NewLoads() LoadsInterface {
+func NewLoads() loadsInterface {
 	return &loads{}
 }
 
@@ -27,6 +27,7 @@ func (l *loads) LoadUserById() gin.HandlerFunc {
 			c.Abort()
 		}
 
+		// user.Password = ""
 		c.Set("userData", user)
 		c.Next()
 	}

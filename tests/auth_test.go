@@ -29,6 +29,19 @@ func TestAuthen(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(response.StatusCode, ShouldEqual, 201)
 
+			Convey("Update exist user not login should fail", func() {
+				user2 := CloneUserModel(userValidData)
+				user2.Name = "New Name"
+				user2.Id = responseUser.Id
+				response := do_request("PUT", userApi+responseUser.Id.Hex(), user2)
+				body := parse_response(response)
+				var responseError Error
+				err := json.Unmarshal(body, &responseError)
+				So(err, ShouldBeNil)
+				So(responseError.Id, ShouldEqual, "USER_NOT_LOGINED")
+				So(response.StatusCode, ShouldEqual, 401)
+			})
+
 			Convey("Login with correct account should successful!", func() {
 				user := CloneUserModel(userValidData)
 				response := do_request("POST", authApi+"login", user)
@@ -39,7 +52,45 @@ func TestAuthen(t *testing.T) {
 				So(response.StatusCode, ShouldEqual, 200)
 				So(loginSuccess.Email, ShouldEqual, user.Email)
 				So(loginSuccess.ApiKey, ShouldNotBeNil)
-				Println(loginSuccess.Password)
+
+				Convey("Update exist user should success", func() {
+					user := CloneUserModel(userValidData)
+					user.Name = "New Name"
+					user.Id = responseUser.Id
+					response := do_request("PUT", userApi+responseUser.Id.Hex(), user,
+						map[string]string{"Authorization": "Bearer " + loginSuccess.ApiKey})
+					body := parse_response(response)
+					var userRes userModel
+					err := json.Unmarshal(body, &userRes)
+					So(err, ShouldBeNil)
+					So(response.StatusCode, ShouldEqual, 200)
+					So(userRes.Name, ShouldEqual, user.Name)
+				})
+				Convey("Create new user must successful", func() {
+					user2 := CloneUserModel(userValidData)
+					user2.Email = "newemail@abc.com"
+					response2 := do_request("POST", userApi, user2)
+					body := parse_response(response2)
+					var responseUser2 userModel
+					err := json.Unmarshal(body, &responseUser2)
+					So(err, ShouldBeNil)
+					So(response2.StatusCode, ShouldEqual, 201)
+					So(responseUser2.Email, ShouldEqual, user2.Email)
+
+					Convey("Should not update another user", func() {
+						user3 := CloneUserModel(userValidData)
+						user3.Email = "newemail3@abc.com"
+						response := do_request("PUT", userApi+responseUser2.Id.Hex(), user3,
+							map[string]string{"Authorization": "Bearer " + loginSuccess.ApiKey})
+						body := parse_response(response)
+						var responseError Error
+						err := json.Unmarshal(body, &responseError)
+						So(err, ShouldBeNil)
+						So(response.StatusCode, ShouldEqual, 403)
+						So(responseError.Id, ShouldEqual, "ACCESS_DENIED")
+					})
+				})
+
 			})
 
 		})

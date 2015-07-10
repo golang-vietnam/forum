@@ -16,7 +16,7 @@ func TestErrorApi(t *testing.T) {
 	Convey("Get API Error", t, func() {
 
 		Convey("Get all api error should return list api error and status 200", func() {
-			response := do_request("GET", errorApi, &data{})
+			response := do_request("GET", errorApi, nil)
 			body := parse_response(response)
 			var responseApiErrors ApiErrors
 			err := json.Unmarshal(body, &responseApiErrors)
@@ -26,7 +26,7 @@ func TestErrorApi(t *testing.T) {
 		})
 
 		Convey("Get an api error should return an api error and status 200", func() {
-			response := do_request("GET", errorApi+apiErrors.ServerError, &data{})
+			response := do_request("GET", errorApi+apiErrors.ServerError, nil)
 			body := parse_response(response)
 			var responseApiError apiErrors.ApiError
 			err := json.Unmarshal(body, &responseApiError)
@@ -36,7 +36,7 @@ func TestErrorApi(t *testing.T) {
 		})
 
 		Convey("Get invalid error Id return not api not found and status 404", func() {
-			response := do_request("GET", errorApi+"NO_ERROR", &data{})
+			response := do_request("GET", errorApi+"NO_ERROR", nil)
 			body := parse_response(response)
 			var responseApiError apiErrors.ApiError
 			err := json.Unmarshal(body, &responseApiError)

@@ -50,6 +50,7 @@ func setup() *gin.Engine {
 
 func routeV1(app *gin.Engine) {
 	loads := middleware.NewLoads()
+	auths := middleware.NewAuthMiddleware()
 
 	//Home
 	homeHandler := handlers.NewHomeHandler()
@@ -65,12 +66,17 @@ func routeV1(app *gin.Engine) {
 	}
 	//User
 	userHandler := handlers.NewUserHandler()
-	list := []gin.HandlerFunc{userHandler.Create}
+	userEdit := []gin.HandlerFunc{
+		loads.LoadUserById(),
+		auths.RequireLogin(),
+		auths.UserHasAuthorization(),
+		userHandler.Edit,
+	}
 	userGroup := v1Group.Group("/user")
 	{
 		userGroup.GET("/:userId", loads.LoadUserById(), userHandler.Detail)
-		userGroup.PUT("/:userId", userHandler.Edit)
-		userGroup.POST("/", list...)
+		userGroup.PUT("/:userId", userEdit...)
+		userGroup.POST("/", userHandler.Create)
 	}
 
 	//Post

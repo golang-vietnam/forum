@@ -35,7 +35,7 @@ func CloneUserModel(user *userModel) *userModel {
 	return &newUser
 }
 
-func TestUserApi(t *testing.T) {
+func TestUserNotLoginApi(t *testing.T) {
 	Convey("Create user", t, func() {
 
 		Reset(func() {
@@ -96,7 +96,7 @@ func TestUserApi(t *testing.T) {
 				})
 
 				Convey("Get exist user should response status 200 and user info", func() {
-					response := do_request("GET", userApi+responseUser.Id.Hex(), &data{})
+					response := do_request("GET", userApi+responseUser.Id.Hex())
 					body := parse_response(response)
 					var user userModel
 					err := json.Unmarshal(body, &user)
@@ -107,41 +107,6 @@ func TestUserApi(t *testing.T) {
 				Convey("Get invalid id should fail", func() {
 					user := CloneUserModel(userValidData)
 					response := do_request("GET", userApi+"helloId", user)
-					body := parse_response(response)
-					var responseError Error
-					err := json.Unmarshal(body, &responseError)
-					So(err, ShouldBeNil)
-					So(responseError.Id, ShouldEqual, "USER_ID_INVALID")
-					So(response.StatusCode, ShouldEqual, 400)
-				})
-				Convey("Update exist user should success", func() {
-					user := CloneUserModel(userValidData)
-					user.Name = "New Name"
-					user.Id = responseUser.Id
-					response := do_request("PUT", userApi+responseUser.Id.Hex(), user)
-					body := parse_response(response)
-					var userRes userModel
-					err := json.Unmarshal(body, &userRes)
-					So(err, ShouldBeNil)
-					So(response.StatusCode, ShouldEqual, 200)
-					So(userRes.Name, ShouldEqual, user.Name)
-				})
-				Convey("Update not exist user should fail", func() {
-					user := CloneUserModel(userValidData)
-					user.Name = "New Name"
-					response := do_request("PUT", userApi+bson.NewObjectId().Hex(), user)
-					body := parse_response(response)
-					var responseError Error
-					err := json.Unmarshal(body, &responseError)
-					So(err, ShouldBeNil)
-					So(responseError.Id, ShouldEqual, "USER_NOT_FOUND")
-					So(response.StatusCode, ShouldEqual, 404)
-				})
-
-				Convey("Update invalid id should fail", func() {
-					user := CloneUserModel(userValidData)
-					user.Name = "New Name"
-					response := do_request("PUT", userApi+"helloId", user)
 					body := parse_response(response)
 					var responseError Error
 					err := json.Unmarshal(body, &responseError)
@@ -165,6 +130,28 @@ func TestUserApi(t *testing.T) {
 			})
 
 		})
-	})
+		Convey("Update not exist user should fail", func() {
+			user := CloneUserModel(userValidData)
+			user.Name = "New Name2"
+			response := do_request("PUT", userApi+bson.NewObjectId().Hex(), user)
+			body := parse_response(response)
+			var responseError Error
+			err := json.Unmarshal(body, &responseError)
+			So(err, ShouldBeNil)
+			So(responseError.Id, ShouldEqual, "USER_NOT_FOUND")
+			So(response.StatusCode, ShouldEqual, 404)
+		})
 
+		Convey("Update invalid id should fail", func() {
+			user := CloneUserModel(userValidData)
+			user.Name = "New Name"
+			response := do_request("PUT", userApi+"helloId", user)
+			body := parse_response(response)
+			var responseError Error
+			err := json.Unmarshal(body, &responseError)
+			So(err, ShouldBeNil)
+			So(responseError.Id, ShouldEqual, "USER_ID_INVALID")
+			So(response.StatusCode, ShouldEqual, 400)
+		})
+	})
 }

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"fmt"
+	// "fmt"
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
@@ -12,6 +12,7 @@ import (
 type authMiddlewareInterface interface {
 	RequireLogin() gin.HandlerFunc
 	UserRequirePermission(role int) gin.HandlerFunc
+	UserHasAuthorization() gin.HandlerFunc
 }
 type authMiddleware struct {
 }
@@ -30,16 +31,30 @@ func NewAuthMiddleware() authMiddlewareInterface {
 **/
 func (a *authMiddleware) RequireLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, err := jwt_lib.ParseFromRequest(c.Request, func(token *jwt_lib.Token) (interface{}, error) {
+		token, err := jwt_lib.ParseFromRequest(c.Request, func(token *jwt_lib.Token) (interface{}, error) {
 			b := ([]byte(config.GetSecret()))
 			return b, nil
 		})
-		fmt.Print("...")
-		if err != nil {
+
+		if err != nil || token == nil || (token != nil && !token.Valid) {
 			c.Error(apiErrors.ThrowError(apiErrors.UserNotLogined))
 			c.Abort()
+			return
 		}
-		c.Set("currentUser", user)
+
+		var currentUser *models.User
+		var findUserErr error
+
+		if userId, ok := token.Claims["userId"].(string); ok {
+			if currentUser, findUserErr = userResource.GetById(userId); findUserErr != nil {
+				c.Error(findUserErr)
+				c.Abort()
+				return
+			}
+		} else {
+			panic("Must load userId in token")
+		}
+		c.Set("currentUser", currentUser)
 		c.Next()
 	}
 }
@@ -60,6 +75,7 @@ func (a *authMiddleware) UserRequirePermission(role int) gin.HandlerFunc {
 		if user.Role < role {
 			c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
 			c.Abort()
+			return
 		}
 		c.Next()
 	}
@@ -81,6 +97,7 @@ func (a *authMiddleware) UserHasAuthorization() gin.HandlerFunc {
 		if currentUser.Id != userData.Id {
 			c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
 			c.Abort()
+			return
 		}
 
 		c.Next()

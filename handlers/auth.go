@@ -36,9 +36,11 @@ func (a *authHandler) Login(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+
 	token := jwt_lib.New(jwt_lib.GetSigningMethod("HS256"))
 	// Set some claims
 	token.Claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
+	token.Claims["userId"] = user.Id.Hex()
 	// Sign and get the complete encoded token as a string
 	apiKey, err := token.SignedString([]byte(config.GetSecret()))
 	if err != nil {

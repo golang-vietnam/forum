@@ -59,26 +59,48 @@ func init() {
 	}
 }
 
-type data struct {
-}
+// method string, urlStr string, model interface{}
+func do_request(params ...interface{}) *http.Response {
 
-func do_request(method string, urlStr string, model interface{}) *http.Response {
+	if params == nil {
+		panic("do_request func must have parameter")
+	}
+
+	if len(params) < 2 {
+		panic("do_request func must >= 2 parameter")
+	}
+	method := params[0].(string)
+	urlStr := params[1].(string)
 
 	if method != "GET" && method != "POST" && method != "PUT" && method != "DELETE" {
 		panic("Method invalid")
 	}
-	var data *strings.Reader = nil
-	if model != nil {
-		jsondata, _ := json.Marshal(model)
-		data = strings.NewReader(string(jsondata))
-	}
+	var data *strings.Reader = strings.NewReader("")
 
+	if len(params) > 2 {
+		model := params[2]
+		if model != nil {
+			jsondata, _ := json.Marshal(model)
+			data = strings.NewReader(string(jsondata))
+		}
+	}
 	req, err := http.NewRequest(method, urlStr, data)
 	if err != nil {
 		panic(err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+
+	if len(params) > 3 {
+		if headers, ok := params[3].(map[string]string); ok {
+			for k, v := range headers {
+				req.Header.Set(k, v)
+			}
+		} else {
+			panic("hearders must map[string]string type")
+		}
+	}
+
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
