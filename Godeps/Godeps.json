@@ -3,6 +3,11 @@
 	"GoVersion": "go1.4.2",
 	"Deps": [
 		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.8.2-6-g0f2a495",
+			"Rev": "0f2a4955b11372eec5a4b95d907eaf8379b835d0"
+		},
+		{
 			"ImportPath": "github.com/dgrijalva/jwt-go",
 			"Comment": "v2.2.0-28-g2e53eb6",
 			"Rev": "2e53eb673c4450614e3bca6f345197f9527dce71"
@@ -13,12 +18,21 @@
 			"Rev": "1a7ab6e4d5fdc72d6df30ef562102ae6e0d18518"
 		},
 		{
+			"ImportPath": "github.com/lucasb-eyer/go-colorful",
+			"Rev": "2d8df49d8d6d8b18dc1d2d4ca3aac54b0be57385"
+		},
+		{
 			"ImportPath": "github.com/manucorporat/sse",
 			"Rev": "c142f0f1baea5cef7f98a8a6c222f6134368c1f5"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
 			"Rev": "d67e0b7d1797975196499f79bcc322c08b9f218b"
+		},
+		{
+			"ImportPath": "github.com/pravj/geopattern",
+			"Comment": "v1.4.1",
+			"Rev": "8ede6605fa3e8aab1162c437cd6d046a317c7d94"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
@@ -41,6 +55,11 @@
 			"ImportPath": "gopkg.in/mgo.v2",
 			"Comment": "r2015.06.03-3-g3569c88",
 			"Rev": "3569c88678d88179dcbd68d02ab081cbca3cd4d0"
+		},
+		{
+			"ImportPath": "gopkg.in/natefinch/lumberjack.v2",
+			"Comment": "v1.0-16-g20b71e5",
+			"Rev": "20b71e5b60d756d3d2f80def009790325acc2b23"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
