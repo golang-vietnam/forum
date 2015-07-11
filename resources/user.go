@@ -1,12 +1,15 @@
 package resources
 
 import (
+	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
+	"github.com/pravj/geopattern"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/bluesuncorp/validator.v5"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"os"
 )
 
 const userColName = models.UserColName
@@ -21,6 +24,7 @@ type resourceUserInterface interface {
 	ParseError(err error) []error
 	IsMatchPassword(hashedPassword string, password string) bool
 	HashPassword(password string) string
+	GenerateAvatar(userId string) error
 }
 
 func NewResourceUser() resourceUserInterface {
@@ -168,4 +172,17 @@ func (r *resourceUser) IsMatchPassword(hashedPassword string, password string) b
 		return false
 	}
 	return true
+}
+
+func (r *resourceUser) GenerateAvatar(userId string) error {
+	args := map[string]string{}
+	gp := geopattern.Generate(args)
+	//Create svg file
+	f, err := os.Create(config.AvatarPath + userId + ".svg")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.WriteString(gp)
+	return err
 }

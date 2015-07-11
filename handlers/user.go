@@ -6,6 +6,7 @@ import (
 )
 
 type userHandlerInterface interface {
+	Index(c *gin.Context)
 	Detail(c *gin.Context)
 	Create(c *gin.Context)
 	Edit(c *gin.Context)
@@ -16,6 +17,11 @@ func NewUserHandler() userHandlerInterface {
 }
 
 type userHandler struct {
+}
+
+func (u *userHandler) Index(c *gin.Context) {
+	userResource.GenerateAvatar("yolo")
+	c.JSON(200, "Yolo")
 }
 
 func (u *userHandler) Detail(c *gin.Context) {

@@ -12,6 +12,7 @@ const (
 	EnvDevelopment = "development"
 	EnvProduction  = "production"
 	SecretKey      = "secret"
+	AvatarPath     = "uploads/avatar/"
 )
 
 type database struct {
