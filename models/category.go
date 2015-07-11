@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+const (
+	CategoryColName = "categories"
+)
+
 type Category struct {
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"_id"`
 	Name        string        `bson:"name" json:"name"`

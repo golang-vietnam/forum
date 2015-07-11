@@ -15,10 +15,6 @@ type postHandlerInterface interface {
 	ListPagingByCategory(c *gin.Context)
 }
 
-const (
-	ITEMS_PER_PAGE = 15
-)
-
 func NewPostHandler() postHandlerInterface {
 	return &postHandler{}
 }
@@ -30,9 +26,6 @@ func (p *postHandler) Index(c *gin.Context) {
 	c.String(200, "Post will be here")
 }
 
-/*
-   [WIP] Not complete yet, just some demo for test purpose
-*/
 func (p *postHandler) Create(c *gin.Context) {
 	var post models.Post
 	if err := c.Bind(&post); err != nil {
@@ -74,21 +67,32 @@ func (p *postHandler) ListPaging(c *gin.Context) {
 		pageIndex = 1
 	}
 
-	posts = postResource.ListPaging(pageIndex, ITEMS_PER_PAGE)
+	if posts, err = postResource.ListPaging(pageIndex, ITEMS_PER_PAGE); err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
 	c.JSON(200, posts)
 }
 
 func (p *postHandler) ListPagingByCategory(c *gin.Context) {
 	var posts []models.Post
 	var err error
+	categoryParam := c.Query("category")
+	if categoryParam == "" || !bson.IsObjectIdHex(categoryParam) {
+		p.ListPaging(c)
+		return
+	}
 	pageParam := c.DefaultQuery("page", "1")
-	// categoryParam := c.DefaultQuery("category", "1")
-
 	pageIndex, err := strconv.Atoi(pageParam)
 	if err != nil {
 		pageIndex = 1
 	}
 
-	posts = postResource.ListPaging(pageIndex, ITEMS_PER_PAGE)
+	categoryId := bson.ObjectIdHex(categoryParam)
+
+	if posts, err = postResource.ListPagingByCategory(categoryId, pageIndex, ITEMS_PER_PAGE); err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
 	c.JSON(200, posts)
 }

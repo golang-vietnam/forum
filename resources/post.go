@@ -1,21 +1,17 @@
 package resources
 
 import (
-	// "github.com/gin-gonic/gin/binding"
-	// "github.com/golang-vietnam/forum/helpers/apiErrors"
 	"github.com/golang-vietnam/forum/models"
-	// "gopkg.in/bluesuncorp/validator.v5"
-	// "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 type resourcePostInterface interface {
-	ListAll() []models.Post
-	ListPaging(page int, perPage int) []models.Post
-	ListPagingByCategory(id bson.ObjectId, page int, perPage int) []models.Post
+	ListAll() ([]models.Post, error)
+	ListPaging(page int, perPage int) ([]models.Post, error)
+	ListPagingByCategory(id bson.ObjectId, page int, perPage int) ([]models.Post, error)
 	GetById(id bson.ObjectId) (models.Post, error)
 	Create(u *models.Post) error
-	RemoveById(id bson.ObjectId)
+	RemoveById(id bson.ObjectId) error
 }
 
 func NewResourcePost() resourcePostInterface {
@@ -27,35 +23,24 @@ type resourcePost struct {
 
 const postColName = models.PostColName
 
-func (r *resourcePost) ListAll() []models.Post {
+func (r *resourcePost) ListAll() ([]models.Post, error) {
 	var posts []models.Post
-	if err := collection(postColName).Find(nil).All(&posts); err != nil {
-		panic(err)
-	}
-	return posts
+	err := collection(postColName).Find(nil).All(&posts)
+	return posts, err
 }
 
-func (r *resourcePost) ListPaging(page int, perPage int) []models.Post {
-	if page < 0 || perPage < 0 {
-		panic("list paging post param invalid")
-	}
+//Please make sure page >= 0 && perPage >= 0
+func (r *resourcePost) ListPaging(page int, perPage int) ([]models.Post, error) {
 	var posts []models.Post
-	if err := collection(postColName).Find(nil).Limit(perPage).Skip(perPage * page).All(&posts); err != nil {
-		panic(err)
-	}
-	return posts
+	err := collection(postColName).Find(nil).Limit(perPage).Skip(perPage * page).All(&posts)
+	return posts, err
 }
 
-func (r *resourcePost) ListPagingByCategory(categoryId bson.ObjectId, page int, perPage int) []models.Post {
-	if page < 0 || perPage < 0 {
-		panic("list paging post param invalid")
-	}
+//Please make sure page >= 0 && perPage >= 0
+func (r *resourcePost) ListPagingByCategory(categoryId bson.ObjectId, page int, perPage int) ([]models.Post, error) {
 	var posts []models.Post
-	//Not tested this query yet
-	if err := collection(postColName).Find(bson.M{"category._id": categoryId}).Limit(perPage).Skip(perPage * page).All(&posts); err != nil {
-		panic(err)
-	}
-	return posts
+	err := collection(postColName).Find(bson.M{"category._id": categoryId}).Limit(perPage).Skip(perPage * page).All(&posts)
+	return posts, err
 }
 
 func (r *resourcePost) GetById(id bson.ObjectId) (models.Post, error) {
@@ -70,8 +55,7 @@ func (r *resourcePost) Create(p *models.Post) error {
 	return err
 }
 
-func (r *resourcePost) RemoveById(id bson.ObjectId) {
-	if err := collection(postColName).RemoveId(id); err != nil {
-		panic(err)
-	}
+func (r *resourcePost) RemoveById(id bson.ObjectId) error {
+	err := collection(postColName).RemoveId(id)
+	return err
 }

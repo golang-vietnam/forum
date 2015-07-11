@@ -88,6 +88,16 @@ func routeV1(app *gin.Engine) {
 		postGroup.GET("/:id", postHandler.GetById)
 	}
 
+	//Category
+	categoryHandler := handlers.NewCategoryHandler()
+	categoryGroup := v1Group.Group("/category")
+	{
+		categoryGroup.GET("/", categoryHandler.GetAll)
+		categoryGroup.POST("/", categoryHandler.Create)
+		categoryGroup.PUT("/", categoryHandler.Update)
+		categoryGroup.GET("/:id", categoryHandler.GetById)
+	}
+
 	//Auth
 	authHandler := handlers.NewAuthHandler()
 	authGroup := v1Group.Group("/auth")
