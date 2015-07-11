@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-vietnam/forum/helpers/log"
 	"github.com/golang-vietnam/forum/models"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -32,7 +34,8 @@ func (p *categoryHandler) Create(c *gin.Context) {
 		return
 	}
 	if err := categoryResource.Create(&category); err != nil {
-		c.AbortWithError(400, err)
+		log.LogError(c.Request, err, "Error in Create Category", logger)
+		c.AbortWithError(500, err)
 		return
 	}
 	c.JSON(201, category)
@@ -46,7 +49,12 @@ func (p *categoryHandler) Update(c *gin.Context) {
 	}
 
 	if err := categoryResource.Update(&category); err != nil {
-		c.AbortWithError(400, err)
+		if err != mgo.ErrNotFound {
+			log.LogError(c.Request, err, "Error in Update Category", logger)
+			c.AbortWithError(500, err)
+			return
+		}
+		c.AbortWithError(404, err)
 		return
 	}
 	c.JSON(201, category)
@@ -65,7 +73,12 @@ func (p *categoryHandler) GetById(c *gin.Context) {
 	oid := bson.ObjectIdHex(id)
 
 	if category, err = categoryResource.GetById(oid); err != nil {
-		c.AbortWithError(400, err)
+		if err != mgo.ErrNotFound {
+			log.LogError(c.Request, err, "Error in GetById Category", logger)
+			c.AbortWithError(500, err)
+			return
+		}
+		c.AbortWithError(404, err)
 		return
 	}
 
@@ -77,7 +90,12 @@ func (p *categoryHandler) GetAll(c *gin.Context) {
 	var err error
 
 	if categories, err = categoryResource.GetAll(); err != nil {
-		c.AbortWithError(500, err)
+		if err != mgo.ErrNotFound {
+			log.LogError(c.Request, err, "Error in GetAll Category", logger)
+			c.AbortWithError(500, err)
+			return
+		}
+		c.AbortWithError(404, err)
 		return
 	}
 	c.JSON(200, categories)

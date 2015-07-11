@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-vietnam/forum/helpers/log"
 	"github.com/golang-vietnam/forum/models"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"strconv"
 )
@@ -32,7 +34,8 @@ func (p *postHandler) Create(c *gin.Context) {
 		c.AbortWithError(400, err)
 	}
 	if err := postResource.Create(&post); err != nil {
-		c.AbortWithError(400, err)
+		log.LogError(c.Request, err, "Error in Create Post", logger)
+		c.AbortWithError(500, err)
 		return
 	}
 	c.JSON(201, post)
@@ -51,7 +54,13 @@ func (p *postHandler) GetById(c *gin.Context) {
 	oid := bson.ObjectIdHex(id)
 
 	if post, err = postResource.GetById(oid); err != nil {
-		panic(err)
+		if err != mgo.ErrNotFound {
+			log.LogError(c.Request, err, "Error in GetById Post", logger)
+			c.AbortWithError(500, err)
+			return
+		}
+		c.AbortWithStatus(404)
+		return
 	}
 
 	c.JSON(200, post)
@@ -68,7 +77,12 @@ func (p *postHandler) ListPaging(c *gin.Context) {
 	}
 
 	if posts, err = postResource.ListPaging(pageIndex, ITEMS_PER_PAGE); err != nil {
-		c.AbortWithError(500, err)
+		if err != mgo.ErrNotFound {
+			log.LogError(c.Request, err, "Error in ListPaging Post", logger)
+			c.AbortWithError(500, err)
+			return
+		}
+		c.AbortWithStatus(404)
 		return
 	}
 	c.JSON(200, posts)
@@ -91,7 +105,12 @@ func (p *postHandler) ListPagingByCategory(c *gin.Context) {
 	categoryId := bson.ObjectIdHex(categoryParam)
 
 	if posts, err = postResource.ListPagingByCategory(categoryId, pageIndex, ITEMS_PER_PAGE); err != nil {
-		c.AbortWithError(500, err)
+		if err != mgo.ErrNotFound {
+			log.LogError(c.Request, err, "Error in ListPagingByCategory Post", logger)
+			c.AbortWithError(500, err)
+			return
+		}
+		c.AbortWithStatus(404)
 		return
 	}
 	c.JSON(200, posts)

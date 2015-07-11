@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/golang-vietnam/forum/helpers/log"
 	"github.com/golang-vietnam/forum/resources"
 )
 
@@ -13,4 +14,5 @@ var (
 	categoryResource = resources.NewResourceCategory()
 	postResource     = resources.NewResourcePost()
 	authResource     = resources.NewResourceAuth()
+	logger           = log.NewLogger()
 )
