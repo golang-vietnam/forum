@@ -25,9 +25,10 @@ func (l *loads) LoadUserById() gin.HandlerFunc {
 		if err != nil {
 			c.Error(err)
 			c.Abort()
+			return
 		}
 
-		// user.Password = ""
+		user.Password = ""
 		c.Set("userData", user)
 		c.Next()
 	}

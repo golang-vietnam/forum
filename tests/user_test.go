@@ -2,7 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	"github.com/golang-vietnam/forum/database"
 	. "github.com/smartystreets/goconvey/convey"
 	"gopkg.in/mgo.v2/bson"
 	"testing"
@@ -15,19 +14,6 @@ var (
 		Name:     "nguyen the nguyen",
 		Role:     1,
 	}
-	userInvalidEmailData = &userModel{
-		Email:    "invalidemail",
-		Name:     "invalidEmail",
-		Password: "invalidEmail",
-	}
-	userInvalidEmailEmptyData = &userModel{
-		Name:     "Empty Email",
-		Password: "Empty Email",
-	}
-	userInvalidPasswordEmptyData = &userModel{
-		Name:  "Ntn",
-		Email: "ntnguyen@ubisen.com",
-	}
 )
 
 func CloneUserModel(user *userModel) *userModel {
@@ -36,14 +22,16 @@ func CloneUserModel(user *userModel) *userModel {
 }
 
 func TestUserNotLoginApi(t *testing.T) {
-	Convey("Create user", t, func() {
 
+	Convey("Test user when not login API", t, func() {
 		Reset(func() {
-			database.ClearAll()
+			clearAll()
 		})
 
-		Convey("With invalid email should return status 400 and email invalid message", func() {
-			response := do_request("POST", userApi, userInvalidEmailData)
+		Convey("Create with invalid email should return status 400 and email invalid message", func() {
+			user := CloneUserModel(userValidData)
+			user.Email = "invalidEmail"
+			response := do_request("POST", userApi, user)
 			body := parse_response(response)
 			var responseData Error
 			err := json.Unmarshal(body, &responseData)
@@ -53,8 +41,10 @@ func TestUserNotLoginApi(t *testing.T) {
 			So(responseData.Message, ShouldEqual, "Email invalid")
 
 		})
-		Convey("With empty email should return status 400 and email required message", func() {
-			response := do_request("POST", userApi, userInvalidEmailEmptyData)
+		Convey("Create with empty email should return status 400 and email required message", func() {
+			user := CloneUserModel(userValidData)
+			user.Email = ""
+			response := do_request("POST", userApi, user)
 			body := parse_response(response)
 			var responseData Error
 			err := json.Unmarshal(body, &responseData)
@@ -63,8 +53,10 @@ func TestUserNotLoginApi(t *testing.T) {
 			So(responseData.Id, ShouldEqual, "USER_EMAIL_REQUIRED")
 			So(responseData.Message, ShouldEqual, "Email is required")
 		})
-		Convey("With empty password should return status 400 and password required message", func() {
-			response := do_request("POST", userApi, userInvalidPasswordEmptyData)
+		Convey("Create with empty password should return status 400 and password required message", func() {
+			user := CloneUserModel(userValidData)
+			user.Password = ""
+			response := do_request("POST", userApi, user)
 			body := parse_response(response)
 			var responseData Error
 			err := json.Unmarshal(body, &responseData)
@@ -90,7 +82,7 @@ func TestUserNotLoginApi(t *testing.T) {
 
 				Convey("Should in database", func() {
 					var userInDb userModel
-					database.Collection(UserColName).FindId(responseUser.Id).One(&userInDb)
+					userCollection().FindId(responseUser.Id).One(&userInDb)
 					So(userInDb.Id, ShouldEqual, responseUser.Id)
 
 				})
@@ -111,7 +103,7 @@ func TestUserNotLoginApi(t *testing.T) {
 					var responseError Error
 					err := json.Unmarshal(body, &responseError)
 					So(err, ShouldBeNil)
-					So(responseError.Id, ShouldEqual, "USER_ID_INVALID")
+					So(responseError.Id, ShouldEqual, "ID_INVALID")
 					So(response.StatusCode, ShouldEqual, 400)
 				})
 
@@ -150,7 +142,7 @@ func TestUserNotLoginApi(t *testing.T) {
 			var responseError Error
 			err := json.Unmarshal(body, &responseError)
 			So(err, ShouldBeNil)
-			So(responseError.Id, ShouldEqual, "USER_ID_INVALID")
+			So(responseError.Id, ShouldEqual, "ID_INVALID")
 			So(response.StatusCode, ShouldEqual, 400)
 		})
 	})

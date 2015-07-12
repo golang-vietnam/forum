@@ -33,6 +33,7 @@ func (p *postHandler) Create(c *gin.Context) {
 	if err := c.Bind(&post); err != nil {
 		c.AbortWithError(400, err)
 	}
+
 	if err := postResource.Create(&post); err != nil {
 		log.LogError(c.Request, err, "Error in Create Post", logger)
 		c.AbortWithError(500, err)

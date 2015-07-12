@@ -72,7 +72,7 @@ func routeV1(app *gin.Engine) {
 		auths.UserHasAuthorization(),
 		userHandler.Edit,
 	}
-	userGroup := v1Group.Group("/user")
+	userGroup := v1Group.Group("/users")
 	{
 		userGroup.GET("/:userId", loads.LoadUserById(), userHandler.Detail)
 		userGroup.PUT("/:userId", userEdit...)
@@ -81,7 +81,7 @@ func routeV1(app *gin.Engine) {
 
 	//Post
 	postHandler := handlers.NewPostHandler()
-	postGroup := v1Group.Group("/post")
+	postGroup := v1Group.Group("/posts")
 	{
 		postGroup.GET("/", postHandler.Index)
 		postGroup.POST("/", postHandler.Create)
@@ -90,7 +90,7 @@ func routeV1(app *gin.Engine) {
 
 	//Category
 	categoryHandler := handlers.NewCategoryHandler()
-	categoryGroup := v1Group.Group("/category")
+	categoryGroup := v1Group.Group("/categories")
 	{
 		categoryGroup.GET("/", categoryHandler.GetAll)
 		categoryGroup.POST("/", categoryHandler.Create)
@@ -100,7 +100,7 @@ func routeV1(app *gin.Engine) {
 
 	//Auth
 	authHandler := handlers.NewAuthHandler()
-	authGroup := v1Group.Group("/auth")
+	authGroup := v1Group.Group("/auths")
 	{
 		authGroup.POST("/login", authHandler.Login)
 	}

@@ -12,10 +12,6 @@ type resourceAuthInterface interface {
 type resourceAuth struct {
 }
 
-var (
-	newResourceUser = NewResourceUser()
-)
-
 func NewResourceAuth() resourceAuthInterface {
 	return &resourceAuth{}
 }

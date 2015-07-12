@@ -2,7 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/models"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -17,7 +16,7 @@ func TestAuthen(t *testing.T) {
 
 	Convey("POST Login", t, func() {
 		Reset(func() {
-			database.ClearAll()
+			clearAll()
 		})
 
 		Convey("Register new account must successful!", func() {

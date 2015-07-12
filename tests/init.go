@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/golang-vietnam/forum/cmd"
 	"github.com/golang-vietnam/forum/config"
+	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/models"
+	"gopkg.in/mgo.v2"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -18,17 +20,15 @@ type Error struct {
 	Id      string `json:id`
 }
 type userModel models.User
-
-const (
-	UserColName = models.UserColName
-)
+type categoryModel models.Category
 
 var (
-	server   string
-	userApi  string
-	authApi  string
-	errorApi string
-	serv     chan bool
+	server      string
+	userApi     string
+	authApi     string
+	errorApi    string
+	categoryApi string
+	serv        chan bool
 )
 
 func getConnectString(host string, port int) string {
@@ -49,14 +49,23 @@ func init() {
 	config.SetEnv(config.EnvTesting)
 	env := config.GetEnvValue()
 	server = getConnectString(env.Server.Host, env.Server.Port)
-	userApi = server + "/v1/user/"
-	authApi = server + "/v1/auth/"
+	userApi = server + "/v1/users/"
+	authApi = server + "/v1/auths/"
 	errorApi = server + "/v1/errors/"
+	categoryApi = server + "/v1/categories/"
 	go runServer()
 	select {
 	case <-serv:
 	case <-time.After(time.Second * 1):
 	}
+}
+
+func clearAll() {
+	database.ClearAll()
+}
+
+func userCollection() *mgo.Collection {
+	return database.Collection(models.UserColName)
 }
 
 // method string, urlStr string, model interface{}

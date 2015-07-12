@@ -45,7 +45,7 @@ func (r *resourceUser) ListAll() []*models.User {
 func (r *resourceUser) GetById(id string) (*models.User, error) {
 
 	if !bson.IsObjectIdHex(id) {
-		return nil, apiErrors.ThrowError(apiErrors.UserIdInValid)
+		return nil, apiErrors.ThrowError(apiErrors.IdInvalid)
 	}
 
 	var user models.User
@@ -100,7 +100,7 @@ func (r *resourceUser) Create(u *models.User) error {
 
 func (r *resourceUser) Edit(id string, u *models.User) error {
 	if !bson.IsObjectIdHex(id) {
-		return apiErrors.ThrowError(apiErrors.UserIdInValid)
+		return apiErrors.ThrowError(apiErrors.IdInvalid)
 	}
 	if err := collection(userColName).UpdateId(bson.ObjectIdHex(id), u); err != nil {
 		if err == mgo.ErrNotFound {

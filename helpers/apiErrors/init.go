@@ -31,9 +31,10 @@ type ApiError apiError
 var ApiErrors []apiError
 
 func init() {
-	ApiErrors = append(privateErrors, userErrors...)
+	ApiErrors = append(commonErrors, userErrors...)
 	ApiErrors = append(ApiErrors, apiErrorErrors...)
 	ApiErrors = append(ApiErrors, authErrors...)
+	ApiErrors = append(ApiErrors, categoryErrors...)
 }
 
 func cloneError(e *apiError) *apiError {

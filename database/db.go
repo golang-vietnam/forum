@@ -34,10 +34,19 @@ func InitDb() (*mgo.Session, error) {
 }
 
 func Index() error {
-	return Collection(models.UserColName).EnsureIndex(mgo.Index{
-		Key:    []string{"email", "id"},
+	if err := Collection(models.UserColName).EnsureIndex(mgo.Index{
+		Key:    []string{"email"},
 		Unique: true,
-	})
+	}); err != nil {
+		return err
+	}
+	if err := Collection(models.CategoryColName).EnsureIndex(mgo.Index{
+		Key:    []string{"slug"},
+		Unique: true,
+	}); err != nil {
+		return err
+	}
+	return nil
 }
 
 func Collection(c string) *mgo.Collection {
@@ -51,9 +60,15 @@ func CloseDb() {
 }
 func ClearAll() {
 	ClearAllUser()
+	ClearAllCategory()
 }
 func ClearAllUser() {
 	if _, err := Collection(models.UserColName).RemoveAll(nil); err != nil {
+		panic(err)
+	}
+}
+func ClearAllCategory() {
+	if _, err := Collection(models.CategoryColName).RemoveAll(nil); err != nil {
 		panic(err)
 	}
 }

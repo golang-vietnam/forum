@@ -4,9 +4,10 @@ const (
 	ServerError                 = "SERVER_ERROR"
 	ServerTemporarilyUnavailble = "SERVER_TEMPORARILY_UNAVAILBLE"
 	AccessDenied                = "ACCESS_DENIED"
+	IdInvalid                   = "ID_INVALID"
 )
 
-var privateErrors = []apiError{
+var commonErrors = []apiError{
 	apiError{
 		Id:      ServerError,
 		Message: "The server encountered an unexpected condition that prevented it from fulfilling the request.",
@@ -21,5 +22,10 @@ var privateErrors = []apiError{
 		Id:      AccessDenied,
 		Message: "Access Denied",
 		Status:  403,
+	},
+	apiError{
+		Id:      IdInvalid,
+		Message: "ID must objectId type",
+		Status:  400,
 	},
 }

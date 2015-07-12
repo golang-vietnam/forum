@@ -11,8 +11,8 @@ const (
 
 type Category struct {
 	Id          bson.ObjectId `bson:"_id,omitempty" json:"_id"`
-	Name        string        `bson:"name" json:"name"`
-	Slug        string        `bson:"slug" json:"slug"`
+	Name        string        `bson:"name" json:"name" binding:"required"`
+	Slug        string        `bson:"slug" json:"slug" binding:"required"`
 	Description string        `bson:"description" json:"description"`
 	Image       string        `bson:"image" json:"image"`
 	CreateAt    time.Time     `bson:"create_at" json:"create_at"`
