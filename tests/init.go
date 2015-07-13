@@ -19,6 +19,9 @@ type Error struct {
 	Message string `json:message`
 	Id      string `json:id`
 }
+type Categories struct {
+	Categories []models.Category `json:categories`
+}
 type userModel models.User
 type categoryModel models.Category
 
@@ -66,6 +69,9 @@ func clearAll() {
 
 func userCollection() *mgo.Collection {
 	return database.Collection(models.UserColName)
+}
+func categoryCollection() *mgo.Collection {
+	return database.Collection(models.CategoryColName)
 }
 
 // method string, urlStr string, model interface{}

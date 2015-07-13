@@ -5,7 +5,6 @@ import (
 	"github.com/golang-vietnam/forum/helpers/log"
 	"github.com/golang-vietnam/forum/models"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type categoryHandlerInterface interface {
@@ -30,12 +29,15 @@ func (p *categoryHandler) Index(c *gin.Context) {
 func (p *categoryHandler) Create(c *gin.Context) {
 	var category models.Category
 	if err := c.Bind(&category); err != nil {
-		c.AbortWithError(400, err)
-		return
+		errors := categoryResource.ParseError(err)
+		if len(errors) > 0 {
+			c.Error(errors[0])
+			return
+		}
 	}
 	if err := categoryResource.Create(&category); err != nil {
 		log.LogError(c.Request, err, "Error in Create Category", logger)
-		c.AbortWithError(500, err)
+		c.Error(err)
 		return
 	}
 	c.JSON(201, category)
@@ -61,42 +63,11 @@ func (p *categoryHandler) Update(c *gin.Context) {
 }
 
 func (p *categoryHandler) GetById(c *gin.Context) {
-	var category models.Category
-	var err error
-	id := c.Params.ByName("id")
-
-	// Verify id is ObjectId, otherwise bail
-	if !bson.IsObjectIdHex(id) {
-		c.AbortWithStatus(404)
-		return
-	}
-	oid := bson.ObjectIdHex(id)
-
-	if category, err = categoryResource.GetById(oid); err != nil {
-		if err != mgo.ErrNotFound {
-			log.LogError(c.Request, err, "Error in GetById Category", logger)
-			c.AbortWithError(500, err)
-			return
-		}
-		c.AbortWithError(404, err)
-		return
-	}
-
+	category := c.MustGet("categoryData")
 	c.JSON(200, category)
 }
 
 func (p *categoryHandler) GetAll(c *gin.Context) {
-	var categories []models.Category
-	var err error
-
-	if categories, err = categoryResource.GetAll(); err != nil {
-		if err != mgo.ErrNotFound {
-			log.LogError(c.Request, err, "Error in GetAll Category", logger)
-			c.AbortWithError(500, err)
-			return
-		}
-		c.AbortWithError(404, err)
-		return
-	}
-	c.JSON(200, categories)
+	categories := categoryResource.GetAll()
+	c.JSON(200, gin.H{"categories": categories})
 }
