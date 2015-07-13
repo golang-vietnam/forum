@@ -95,7 +95,7 @@ func routeV1(app *gin.Engine) {
 		categoryGroup.GET("/", categoryHandler.GetAll)
 		categoryGroup.POST("/", categoryHandler.Create)
 		categoryGroup.PUT("/", categoryHandler.Update)
-		categoryGroup.GET("/:id", categoryHandler.GetById)
+		categoryGroup.GET("/:categoryId", loads.LoadCategoryById(), categoryHandler.GetById)
 	}
 
 	//Auth
