@@ -23,6 +23,6 @@ type Post struct {
 	Status   int           `bson:"status" json:"status"`
 	LastPost *Post         `bson:"last_post" json:"last_post"`
 	Sticky   int           `bson:"sticky" json:"sticky"`
-	CreateAt time.Time     `bson:"create_at" json:"create_at"`
-	UpdateAt time.Time     `bson:"update_at" json:"update_at"`
+	CreateAt *time.Time    `bson:"create_at" json:"create_at"`
+	UpdateAt *time.Time    `bson:"update_at" json:"update_at"`
 }

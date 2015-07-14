@@ -69,7 +69,7 @@ var (
 		},
 		apiError{
 			Id:      UserRoleMax,
-			Message: "Role max is 1 as editor",
+			Message: "Role max is 2 as admin",
 			Status:  400,
 		},
 		apiError{

@@ -29,11 +29,11 @@ func (l *loads) LoadUserById() gin.HandlerFunc {
 			return
 		}
 
-		user.Password = ""
 		c.Set("userData", user)
 		c.Next()
 	}
 }
+
 func (l *loads) LoadCategoryById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		categoryId := c.Param("categoryId")

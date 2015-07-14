@@ -37,7 +37,7 @@ func (a *authMiddleware) RequireLogin() gin.HandlerFunc {
 		})
 
 		if err != nil || token == nil || (token != nil && !token.Valid) {
-			c.Error(apiErrors.ThrowError(apiErrors.UserNotLogined))
+			c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
 			c.Abort()
 			return
 		}
@@ -94,10 +94,18 @@ func (a *authMiddleware) UserHasAuthorization() gin.HandlerFunc {
 			panic("data with key userData must models.User type")
 		}
 
-		if currentUser.Id != userData.Id {
-			c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
-			c.Abort()
-			return
+		if currentUser.Role == models.NormalUser {
+			if currentUser.Id != userData.Id {
+				c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
+				c.Abort()
+				return
+			}
+		} else {
+			if currentUser.Role <= userData.Role {
+				c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
+				c.Abort()
+				return
+			}
 		}
 
 		c.Next()

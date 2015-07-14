@@ -47,9 +47,8 @@ func (r *resourceUser) GetById(id string) (*models.User, error) {
 	if !bson.IsObjectIdHex(id) {
 		return nil, apiErrors.ThrowError(apiErrors.IdInvalid)
 	}
-
 	var user models.User
-	if err := collection(userColName).FindId(bson.ObjectIdHex(id)).One(&user); err != nil {
+	if err := collection(userColName).Find(bson.M{"_id": bson.ObjectIdHex(id), "DeleteAt": bson.M{"$ne": "null"}}).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			return nil, apiErrors.ThrowError(apiErrors.UserNotFound)
 		}
@@ -102,6 +101,7 @@ func (r *resourceUser) Edit(id string, u *models.User) error {
 	if !bson.IsObjectIdHex(id) {
 		return apiErrors.ThrowError(apiErrors.IdInvalid)
 	}
+	u.Id = ""
 	if err := collection(userColName).UpdateId(bson.ObjectIdHex(id), u); err != nil {
 		if err == mgo.ErrNotFound {
 			return apiErrors.ThrowError(apiErrors.UserNotFound)

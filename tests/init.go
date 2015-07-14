@@ -8,6 +8,7 @@ import (
 	"github.com/golang-vietnam/forum/database"
 	"github.com/golang-vietnam/forum/models"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -34,6 +35,9 @@ var (
 	serv        chan bool
 )
 
+func newObjectId() bson.ObjectId {
+	return bson.NewObjectId()
+}
 func getConnectString(host string, port int) string {
 	u, err := url.Parse(fmt.Sprintf("http://%s:%d", host, port))
 	if err != nil {

@@ -15,6 +15,6 @@ type Category struct {
 	Slug        string        `bson:"slug" json:"slug" binding:"required"`
 	Description string        `bson:"description" json:"description"`
 	Image       string        `bson:"image" json:"image"`
-	CreateAt    time.Time     `bson:"create_at" json:"create_at"`
-	UpdateAt    time.Time     `bson:"update_at" json:"update_at"`
+	CreateAt    *time.Time    `bson:"create_at" json:"create_at"`
+	UpdateAt    *time.Time    `bson:"update_at" json:"update_at"`
 }

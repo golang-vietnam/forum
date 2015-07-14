@@ -37,8 +37,8 @@ func TestAuthen(t *testing.T) {
 				var responseError Error
 				err := json.Unmarshal(body, &responseError)
 				So(err, ShouldBeNil)
-				So(responseError.Id, ShouldEqual, "USER_NOT_LOGINED")
-				So(response.StatusCode, ShouldEqual, 401)
+				So(responseError.Id, ShouldEqual, "ACCESS_DENIED")
+				So(response.StatusCode, ShouldEqual, 403)
 			})
 
 			Convey("Login with correct account should successful!", func() {
@@ -55,7 +55,7 @@ func TestAuthen(t *testing.T) {
 				Convey("Update exist user should success", func() {
 					user := CloneUserModel(userValidData)
 					user.Name = "New Name"
-					user.Id = responseUser.Id
+					user.Id = newObjectId()
 					response := do_request("PUT", userApi+responseUser.Id.Hex(), user,
 						map[string]string{"Authorization": "Bearer " + loginSuccess.ApiKey})
 					body := parse_response(response)
@@ -64,6 +64,7 @@ func TestAuthen(t *testing.T) {
 					So(err, ShouldBeNil)
 					So(response.StatusCode, ShouldEqual, 200)
 					So(userRes.Name, ShouldEqual, user.Name)
+					So(userRes.Id.Hex(), ShouldNotEqual, user.Id.Hex())
 				})
 				Convey("Create new user must successful", func() {
 					user2 := CloneUserModel(userValidData)
