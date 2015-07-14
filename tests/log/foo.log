@@ -21,3 +21,5 @@
 {"error":"Category exist","level":"error","method":"POST","msg":"Error in Create Category","time":"2015-07-13T22:15:47+07:00","url":"/v1/categories/"}
 {"error":"Category exist","level":"error","method":"POST","msg":"Error in Create Category","time":"2015-07-13T22:16:35+07:00","url":"/v1/categories/"}
 {"error":"Category exist","level":"error","method":"POST","msg":"Error in Create Category","time":"2015-07-13T22:19:16+07:00","url":"/v1/categories/"}
+{"error":"Category exist","level":"error","method":"POST","msg":"Error in Create Category","time":"2015-07-13T23:05:30+07:00","url":"/v1/categories/"}
+{"error":"Category exist","level":"error","method":"POST","msg":"Error in Create Category","time":"2015-07-14T11:20:31+07:00","url":"/v1/categories/"}
