@@ -20,6 +20,8 @@ runOnTest:
 install:
 	@echo "Installing..."
 	@go get github.com/kr/godep
+	@go get github.com/codegangsta/gin
+	@go get github.com/smartystreets/goconvey
 	@export PATH=$(PATH):$(GOPATH)/bin;godep restore
 	@echo "Install dependencies successful!"
 

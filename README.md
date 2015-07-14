@@ -9,8 +9,9 @@
 
 ### Install dependencies
     
-    make install
-
+    go get github.com/golang-vietnam/forum
+    cd $GOPATH/src/github.com/golang-vietnam/forum;make install
+    
 ### Run project
 On `development` mode we use [Gin](https://github.com/codegangsta/gin) to live reload. Server run on port 3000
 
