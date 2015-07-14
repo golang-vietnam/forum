@@ -33,7 +33,7 @@ func (r *resourcePost) ListAll() ([]models.Post, error) {
 		}
 		panic(err)
 	}
-	return posts, err
+	return posts, nil
 }
 
 //Please make sure page >= 0 && perPage >= 0
@@ -42,7 +42,7 @@ func (r *resourcePost) ListPaging(page int, perPage int) ([]models.Post, error) 
 	if err := collection(postColName).Find(nil).Limit(perPage).Skip(perPage * page).All(&posts); err != nil {
 		panic(err)
 	}
-	return posts, err
+	return posts, nil
 }
 
 //Please make sure page >= 0 && perPage >= 0
@@ -51,18 +51,18 @@ func (r *resourcePost) ListPagingByCategory(categoryId bson.ObjectId, page int, 
 	if err := collection(postColName).Find(bson.M{"category._id": categoryId}).Limit(perPage).Skip(perPage * page).All(&posts); err != nil {
 		panic(err)
 	}
-	return posts, err
+	return posts, nil
 }
 
 func (r *resourcePost) GetById(id bson.ObjectId) (models.Post, error) {
 	var post models.Post
 	if err := collection(postColName).FindId(id).One(&post); err != nil {
 		if err == mgo.ErrNotFound {
-			return nil, apiErrors.ThrowError(apiErrors.PostNotFound)
+			return post, apiErrors.ThrowError(apiErrors.PostNotFound)
 		}
 		panic(err)
 	}
-	return post, err
+	return post, nil
 }
 
 func (r *resourcePost) Create(p *models.Post) error {
@@ -73,7 +73,7 @@ func (r *resourcePost) Create(p *models.Post) error {
 		}
 		panic(err)
 	}
-	return err
+	return nil
 }
 
 func (r *resourcePost) RemoveById(id bson.ObjectId) error {
@@ -83,5 +83,5 @@ func (r *resourcePost) RemoveById(id bson.ObjectId) error {
 		}
 		panic(err)
 	}
-	return err
+	return nil
 }
