@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/golang-vietnam/forum/cmd"
-	"github.com/golang-vietnam/forum/config"
+	"github.com/golang-vietnam/forum/helpers/config"
 	"os"
 )
 
@@ -26,7 +26,7 @@ func main() {
 	if len(os.Args) == 2 {
 		arg = os.Args[1]
 	}
-	config.Loads("config/config.yml")
+	config.Loads("./config.yml")
 	switch arg {
 	case "start":
 		config.SetEnv(config.EnvDevelopment)

@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"github.com/golang-vietnam/forum/database"
+	"github.com/golang-vietnam/forum/helpers/database"
 	"gopkg.in/mgo.v2"
 )
 

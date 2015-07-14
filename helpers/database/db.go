@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/golang-vietnam/forum/config"
+	"github.com/golang-vietnam/forum/helpers/config"
 	"github.com/golang-vietnam/forum/models"
 	"gopkg.in/mgo.v2"
 	"time"

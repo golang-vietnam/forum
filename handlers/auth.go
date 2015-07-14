@@ -3,8 +3,8 @@ package handlers
 import (
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
+	"github.com/golang-vietnam/forum/helpers/config"
 	"github.com/golang-vietnam/forum/models"
 	"time"
 )

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/golang-vietnam/forum/cmd"
-	"github.com/golang-vietnam/forum/config"
-	"github.com/golang-vietnam/forum/database"
+	"github.com/golang-vietnam/forum/helpers/config"
+	"github.com/golang-vietnam/forum/helpers/database"
 	"github.com/golang-vietnam/forum/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -52,7 +52,7 @@ func runServer() {
 }
 
 func init() {
-	config.Loads("../config/config.yml")
+	config.Loads("../config.yml")
 	config.SetEnv(config.EnvTesting)
 	env := config.GetEnvValue()
 	server = getConnectString(env.Server.Host, env.Server.Port)

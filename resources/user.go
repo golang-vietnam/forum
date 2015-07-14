@@ -1,8 +1,8 @@
 package resources
 
 import (
-	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
+	"github.com/golang-vietnam/forum/helpers/config"
 	"github.com/golang-vietnam/forum/models"
 	"github.com/pravj/geopattern"
 	"golang.org/x/crypto/bcrypt"
