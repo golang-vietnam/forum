@@ -98,7 +98,6 @@ func TestCategoryApi(t *testing.T) {
 			So(responseError.Id, ShouldEqual, "CATEGORY_SLUG_REQUIRED")
 		})
 		Convey("Get not exist category should fail and status 404", func() {
-
 			response := do_request("GET", categoryApi+bson.NewObjectId().Hex())
 			body := parse_response(response)
 			var responseError Error

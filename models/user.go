@@ -17,7 +17,7 @@ type User struct {
 	Name         string        `bson:"name" json:"name"`
 	Email        string        `bson:"email" json:"email" binding:"required,max=50,min=3,email"`
 	Password     string        `bson:"password" json:"password" binding:"required"`
-	LastActivate time.Time     `bson:"last_activate" json:"last_activate"`
+	LastActivate *time.Time    `bson:"last_activate" json:"last_activate"`
 	Image        string        `bson:"image" json:"image"`
 	Status       string        `bson:"status" json:"status"`
 	Role         int           `bson:"role" json:"role" binding:"max=2,min=0"`

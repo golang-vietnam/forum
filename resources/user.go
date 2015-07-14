@@ -48,7 +48,7 @@ func (r *resourceUser) GetById(id string) (*models.User, error) {
 		return nil, apiErrors.ThrowError(apiErrors.IdInvalid)
 	}
 	var user models.User
-	if err := collection(userColName).Find(bson.M{"_id": bson.ObjectIdHex(id), "DeleteAt": bson.M{"$ne": "null"}}).One(&user); err != nil {
+	if err := collection(userColName).FindId(bson.ObjectIdHex(id)).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			return nil, apiErrors.ThrowError(apiErrors.UserNotFound)
 		}
@@ -87,6 +87,7 @@ func (r *resourceUser) Create(u *models.User) error {
 	u.Password = r.HashPassword(u.Password)
 	u.Id = bson.NewObjectId()
 	u.Role = models.NormalUser
+	u.DeleteAt = nil
 	if err := collection(userColName).Insert(u); err != nil {
 		if mgo.IsDup(err) {
 			return apiErrors.ThrowError(apiErrors.UserExist)

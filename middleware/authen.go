@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	// "fmt"
 	jwt_lib "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/config"
 	"github.com/golang-vietnam/forum/helpers/apiErrors"
+	"github.com/golang-vietnam/forum/helpers/utils"
 	"github.com/golang-vietnam/forum/models"
 )
 
@@ -21,14 +21,6 @@ func NewAuthMiddleware() authMiddlewareInterface {
 	return &authMiddleware{}
 }
 
-/**
-
-	TODO:
-	- Check user is login
-	- If not return not login error
-	- If logined set "user" in context
-
-**/
 func (a *authMiddleware) RequireLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := jwt_lib.ParseFromRequest(c.Request, func(token *jwt_lib.Token) (interface{}, error) {
@@ -59,20 +51,10 @@ func (a *authMiddleware) RequireLogin() gin.HandlerFunc {
 	}
 }
 
-/**
-
-	TODO:
-	- If user has role < role param return access deny error
-	- If user has role >= role param -> pass
-
-**/
 func (a *authMiddleware) UserRequirePermission(role int) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, ok := c.MustGet("currentUser").(*models.User)
-		if !ok {
-			panic("data with key currentUser must models.User type")
-		}
-		if user.Role < role {
+		currentUser := utils.MustGetCurrentUser(c)
+		if currentUser.Role < role {
 			c.Error(apiErrors.ThrowError(apiErrors.AccessDenied))
 			c.Abort()
 			return
@@ -84,15 +66,8 @@ func (a *authMiddleware) UserRequirePermission(role int) gin.HandlerFunc {
 func (a *authMiddleware) UserHasAuthorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		currentUser, currentUserOk := c.MustGet("currentUser").(*models.User)
-		if !currentUserOk {
-			panic("data with key currentUser must models.User type")
-		}
-
-		userData, userDataOk := c.MustGet("userData").(*models.User)
-		if !userDataOk {
-			panic("data with key userData must models.User type")
-		}
+		currentUser := utils.MustGetCurrentUser(c)
+		userData := utils.MustGetUserData(c)
 
 		if currentUser.Role == models.NormalUser {
 			if currentUser.Id != userData.Id {

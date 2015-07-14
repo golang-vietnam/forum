@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-vietnam/forum/helpers/utils"
 	"github.com/golang-vietnam/forum/models"
 )
 
@@ -57,6 +58,9 @@ func (u *userHandler) Create(c *gin.Context) {
 
 func (u *userHandler) Edit(c *gin.Context) {
 	var user models.User
+
+	currentUser := utils.MustGetCurrentUser(c)
+
 	if err := c.Bind(&user); err != nil {
 		errors := userResource.ParseError(err)
 		if len(errors) > 0 {
@@ -65,6 +69,14 @@ func (u *userHandler) Edit(c *gin.Context) {
 		}
 	}
 	userId := c.Param("userId")
+
+	if currentUser.Role != models.Admin {
+		user.Role = models.NormalUser
+	}
+	if currentUser.Role == models.NormalUser {
+		user.DeleteAt = nil
+	}
+
 	if err := userResource.Edit(userId, &user); err != nil {
 		c.AbortWithError(400, err)
 		return
