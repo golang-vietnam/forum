@@ -25,10 +25,12 @@ type Categories struct {
 }
 type userModel models.User
 type categoryModel models.Category
+type postModel models.Post
 
 var (
 	server      string
 	userApi     string
+	postApi     string
 	authApi     string
 	errorApi    string
 	categoryApi string
@@ -58,6 +60,7 @@ func init() {
 	server = getConnectString(env.Server.Host, env.Server.Port)
 	userApi = server + "/v1/users/"
 	authApi = server + "/v1/auths/"
+	postApi = server + "/v1/posts/"
 	errorApi = server + "/v1/errors/"
 	categoryApi = server + "/v1/categories/"
 	go runServer()
