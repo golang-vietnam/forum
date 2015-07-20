@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-vietnam/forum/handlers"
 	"github.com/golang-vietnam/forum/middleware"
+	"github.com/golang-vietnam/forum/models"
 )
 
 func routeV1(app *gin.Engine) {
@@ -48,11 +49,25 @@ func routeV1(app *gin.Engine) {
 
 	//Category
 	categoryHandler := handlers.NewCategoryHandler()
+
 	categoryGroup := v1Group.Group("/categories")
 	{
 		categoryGroup.GET("/", categoryHandler.GetAll)
-		categoryGroup.POST("/", categoryHandler.Create)
-		categoryGroup.PUT("/", categoryHandler.Update)
+
+		categoryCreate := []gin.HandlerFunc{
+			auths.RequireLogin(),
+			auths.UserRequirePermission(models.Admin),
+			categoryHandler.Create,
+		}
+		categoryGroup.POST("/", categoryCreate...)
+
+		categoryUpdate := []gin.HandlerFunc{
+			auths.RequireLogin(),
+			auths.UserRequirePermission(models.Admin),
+			categoryHandler.Update,
+		}
+		categoryGroup.PUT("/", categoryUpdate...)
+
 		categoryGroup.GET("/:categoryId", loads.LoadCategoryById(), categoryHandler.GetById)
 	}
 
