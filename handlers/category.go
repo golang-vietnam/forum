@@ -46,8 +46,11 @@ func (p *categoryHandler) Create(c *gin.Context) {
 func (p *categoryHandler) Update(c *gin.Context) {
 	var category models.Category
 	if err := c.Bind(&category); err != nil {
-		c.AbortWithError(400, err)
-		return
+		errors := categoryResource.ParseError(err)
+		if len(errors) > 0 {
+			c.Error(errors[0])
+			return
+		}
 	}
 
 	if err := categoryResource.Update(&category); err != nil {

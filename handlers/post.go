@@ -12,6 +12,7 @@ import (
 type postHandlerInterface interface {
 	Index(c *gin.Context)
 	Create(c *gin.Context)
+	Update(c *gin.Context)
 	GetById(c *gin.Context)
 	ListPaging(c *gin.Context)
 	ListPagingByCategory(c *gin.Context)
@@ -31,10 +32,32 @@ func (p *postHandler) Index(c *gin.Context) {
 func (p *postHandler) Create(c *gin.Context) {
 	var post models.Post
 	if err := c.Bind(&post); err != nil {
-		c.AbortWithError(400, err)
+		errors := postResource.ParseError(err)
+		if len(errors) > 0 {
+			c.Error(errors[0])
+			return
+		}
 	}
 
 	if err := postResource.Create(&post); err != nil {
+		log.LogError(c.Request, err, "Error in Create Post", logger)
+		c.AbortWithError(500, err)
+		return
+	}
+	c.JSON(201, post)
+}
+
+func (p *postHandler) Update(c *gin.Context) {
+	var post models.Post
+	if err := c.Bind(&post); err != nil {
+		errors := postResource.ParseError(err)
+		if len(errors) > 0 {
+			c.Error(errors[0])
+			return
+		}
+	}
+
+	if err := postResource.Update(&post); err != nil {
 		log.LogError(c.Request, err, "Error in Create Post", logger)
 		c.AbortWithError(500, err)
 		return
