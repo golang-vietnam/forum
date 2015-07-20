@@ -5,6 +5,9 @@ const (
 	PostNotFound        = "POST_NOT_FOUND"
 	PostIdInValid       = "POST_ID_INVALID"
 	PostIdParamRequired = "POST_ID_PARAM_REQUIRED"
+	PostUserRequired    = "POST_USER_REQUIRED"
+	PostTitleRequired   = "POST_TITLE_REQUIRED"
+	PostContentRequired = "POST_CONTENT_REQUIRED"
 )
 
 var (
@@ -27,6 +30,21 @@ var (
 		apiError{
 			Id:      PostExist,
 			Message: "This post has been exist!",
+			Status:  400,
+		},
+		apiError{
+			Id:      PostUserRequired,
+			Message: "User is required",
+			Status:  400,
+		},
+		apiError{
+			Id:      PostTitleRequired,
+			Message: "Title is required",
+			Status:  400,
+		},
+		apiError{
+			Id:      PostContentRequired,
+			Message: "Content is required",
 			Status:  400,
 		},
 	}

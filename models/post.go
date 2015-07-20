@@ -13,9 +13,9 @@ type Post struct {
 	Id       bson.ObjectId `bson:"_id,omitempty" json:"_id"`
 	Category Category      `bson:"category" json:"category"`
 	Parent   *Post         `bson:"parent" json:"parent"`
-	User     User          `bson:"user" json:"user"`
-	Title    string        `bson:"title" json:"title"`
-	Content  string        `bson:"content" json:"content"`
+	User     User          `bson:"user" json:"user" binding:"required"`
+	Title    string        `bson:"title" json:"title" binding:"required"`
+	Content  string        `bson:"content" json:"content" binding:"required"`
 	Quote    string        `bson:"quote" json:"quote"`
 	Image    string        `bson:"image" json:"image"`
 	View     int           `bson:"view" json:"view"`
