@@ -26,3 +26,13 @@ _testmain.go
 gin-bin
 bin
 *.log
+
+# Temporaty files
+__*
+
+# Client
+*.log
+*.out
+dist/
+node_modules/
+webpack-stats.json

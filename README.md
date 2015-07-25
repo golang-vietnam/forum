@@ -20,3 +20,26 @@ On `development` mode we use [Gin](https://github.com/codegangsta/gin) to live r
 ### Test server
 	
 	make test
+
+## Frontend
+
+Isomorphic code written in Node using [React](https://facebook.github.io/react/), [Redux](https://github.com/gaearon/redux) and [Semantic UI](http://semantic-ui.com).
+
+### Installation
+
+```
+npm install
+```
+
+### Running Dev Server
+
+```
+npm run dev
+```
+
+### Building and Running Production Server
+
+```
+npm run build
+npm run start
+```
