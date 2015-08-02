@@ -1,5 +1,7 @@
 ## Simple golang programing language forum in VietNam 
 
+**We temporary paused this project in order to build a new link sharing site for developers. Please check it at [grox](https://github.com/golang-vietnam/grox) project.**
+
  ![alt golang](https://raw.githubusercontent.com/golang-vietnam/forum/master/isomorphic_code_share.png "golang programing language")
 
 ### Core dependencies
